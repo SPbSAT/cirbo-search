@@ -1,0 +1,6 @@
+[submodule "third_party/catch2"]
+	path = third_party/catch2
+	url = https://github.com/catchorg/Catch2.git
+[submodule "third_party/cli11"]
+	path = third_party/cli11
+	url = git@github.com:CLIUtils/CLI11.git
