@@ -1,33 +1,36 @@
 ---
-Checks: "-*,
-        clang-analyzer-*,
-        clang-diagnostic-*,
-        cppcoreguidelines-*,
-        google-*,
-        modernize-*,
-        misc-*,
-        performance-*,
-        -cppcoreguidelines-avoid-c-arrays,
-        -cppcoreguidelines-pro-bounds-constant-array-index,
-        -modernize-avoid-c-arrays,
-        -modernize-use-trailing-return-type,
-        -modernize-type-traits,
-        -modernize-use-constraints,
-        -readability-else-after-return,
-        -readability-static-accessed-through-instance,
-        -readability-avoid-const-params-in-decls,
-        -cppcoreguidelines-non-private-member-variables-in-classes,
-        -misc-non-private-member-variables-in-classes,
-        -performance-avoid-endl,
-        -readability-identifier-length,
-        -google-readability-todo,
-        -cppcoreguidelines-avoid-magic-numbers,
-        -google-build-namespaces,
-        -cppcoreguidelines-rvalue-reference-param-not-moved,
-        -cppcoreguidelines-special-member-functions,
-        -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
-"
-WarningsAsErrors: true
+Checks: >
+  -*,
+  clang-analyzer-*,
+  clang-diagnostic-*,
+  cppcoreguidelines-*,
+  google-*,
+  modernize-*,
+  misc-*,
+  bugprone-*,
+  readability-*,
+  performance-*,
+  -bugprone-easily-swappable-parameters,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -modernize-avoid-c-arrays,
+  -modernize-use-trailing-return-type,
+  -modernize-type-traits,
+  -modernize-use-constraints,
+  -readability-else-after-return,
+  -readability-static-accessed-through-instance,
+  -readability-avoid-const-params-in-decls,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -misc-non-private-member-variables-in-classes,
+  -performance-avoid-endl,
+  -readability-identifier-length,
+  -google-readability-todo,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -google-build-namespaces,
+  -cppcoreguidelines-rvalue-reference-param-not-moved,
+  -cppcoreguidelines-special-member-functions,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+WarningsAsErrors: '*'
 HeaderFileExtensions:
   - h
   - hh
@@ -38,6 +41,4 @@ ImplementationFileExtensions:
   - cc
   - cpp
   - cxxl
-HeaderFilterRegex: '.*'
-...
-
+HeaderFilterRegex: '^(include|src)/'

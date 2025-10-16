@@ -6,10 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
 # Compilation database is needed for static linter.
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE BOOL "Generate compile_commands.json for clang-tidy" FORCE)
 
-include_directories(.)
 include_directories(src)
-include_directories(src/io)
 
 add_executable(cirbo_search_cli app/cirbo_search_cli.cpp)

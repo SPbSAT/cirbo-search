@@ -2,10 +2,11 @@
 
 #include <cassert>
 #include <cstdint>
+#include <cstddef>
 #include <functional>
 #include <vector>
 
-#include "src/core/csat_types.hpp"
+#include "core/logic.hpp"
 
 /** Namespace contains functions that evaluate different Operators. **/
 namespace cirbo::op
@@ -46,7 +47,7 @@ inline GateState AND(GateState a, GateState b, GateState /*unused*/ = GateState:
         GateState::UNDEFINED,
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
-    return table_[static_cast<uint8_t>(a) * GateStateNumber + static_cast<uint8_t>(b)];
+    return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
 inline GateState OR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
@@ -62,7 +63,7 @@ inline GateState OR(GateState a, GateState b, GateState /*unused*/ = GateState::
         GateState::TRUE,
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
-    return table_[static_cast<uint8_t>(a) * GateStateNumber + static_cast<uint8_t>(b)];
+    return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
 inline GateState XOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
@@ -78,7 +79,7 @@ inline GateState XOR(GateState a, GateState b, GateState /*unused*/ = GateState:
         GateState::UNDEFINED,
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
-    return table_[static_cast<uint8_t>(a) * GateStateNumber + static_cast<uint8_t>(b)];
+    return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
 inline GateState NAND(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
@@ -94,7 +95,7 @@ inline GateState NAND(GateState a, GateState b, GateState /*unused*/ = GateState
         GateState::UNDEFINED,
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
-    return table_[static_cast<uint8_t>(a) * GateStateNumber + static_cast<uint8_t>(b)];
+    return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
 inline GateState NOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
@@ -110,7 +111,7 @@ inline GateState NOR(GateState a, GateState b, GateState /*unused*/ = GateState:
         GateState::FALSE,
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
-    return table_[static_cast<uint8_t>(a) * GateStateNumber + static_cast<uint8_t>(b)];
+    return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
 inline GateState NXOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
@@ -126,7 +127,7 @@ inline GateState NXOR(GateState a, GateState b, GateState /*unused*/ = GateState
         GateState::UNDEFINED,
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
-    return table_[static_cast<uint8_t>(a) * GateStateNumber + static_cast<uint8_t>(b)];
+    return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
 inline GateState
@@ -142,7 +143,8 @@ IFF(GateState a, GateState /*unused*/ = GateState::UNDEFINED, GateState /*unused
 
 inline GateState MUX(GateState x, GateState y, GateState z) noexcept
 {
-    static GateState const table_[3 * GateStateNumber * GateStateNumber]{
+    constexpr size_t TABLE_SIZE_X = 9;
+    static constexpr GateState table_[3 * GateStateNumber * GateStateNumber]{
         // x is FALSE, then we take value of y
         GateState::FALSE,
         GateState::FALSE,
@@ -175,7 +177,7 @@ inline GateState MUX(GateState x, GateState y, GateState z) noexcept
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
     return table_
-        [0 + static_cast<uint8_t>(x) * 9 + static_cast<uint8_t>(y) * GateStateNumber + static_cast<uint8_t>(z)];
+        [0 + (static_cast<uint8_t>(x) * TABLE_SIZE_X) + (static_cast<uint8_t>(y) * GateStateNumber) + static_cast<uint8_t>(z)];
 }
 
 inline GateState CONST_FALSE(
@@ -203,7 +205,7 @@ inline Operator getOperator(GateType type) noexcept
     assert(type != GateType::BUFF);
     assert(type != GateType::UNDEFINED);
     // Must be changed if csat::GateType is changed
-    static Operator operators_[SupportedOperatorNumber]{
+    static constexpr Operator operators_[SupportedOperatorNumber]{
         &NOT, &AND, &NAND, &OR, &NOR, &XOR, &NXOR, &IFF, &MUX, &CONST_FALSE, &CONST_TRUE};
     return operators_[getIndexByOperator(type)];
 }
@@ -220,7 +222,7 @@ using MapFunction = std::function<GateState(T)>;
 template<class T>
 using OperatorNT = GateState (*)(ContainerT<T> const& container, MapFunction<T> mapper);
 
-namespace
+namespace impl
 {
 
 /**
@@ -245,7 +247,7 @@ inline GateState FoldMapOperator_(Operator oper, ContainerT<T> const& container,
     return state;
 }
 
-}  // namespace
+}  // namespace impl
 
 template<class T>
 inline GateState NOT(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
@@ -258,21 +260,21 @@ template<class T>
 inline GateState AND(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for AND.");
-    return FoldMapOperator_<T, GateState::FALSE>(&AND, container, mapper);
+    return impl::FoldMapOperator_<T, GateState::FALSE>(&AND, container, mapper);
 }
 
 template<class T>
 inline GateState OR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for OR.");
-    return FoldMapOperator_<T, GateState::TRUE>(&OR, container, mapper);
+    return impl::FoldMapOperator_<T, GateState::TRUE>(&OR, container, mapper);
 }
 
 template<class T>
 inline GateState XOR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for XOR.");
-    return FoldMapOperator_<T>(&XOR, container, mapper);
+    return impl::FoldMapOperator_<T>(&XOR, container, mapper);
 }
 
 template<class T>
@@ -311,7 +313,7 @@ inline GateState IFF(ContainerT<T> const& container, MapFunction<T> mapper) noex
 }
 
 template<class T>
-inline GateState CONST_FALSE(
+constexpr GateState CONST_FALSE(
     [[maybe_unused]] ContainerT<T> const& container,
     [[maybe_unused]] MapFunction<T> mapper) noexcept
 {
@@ -320,7 +322,7 @@ inline GateState CONST_FALSE(
 }
 
 template<class T>
-inline GateState CONST_TRUE(
+constexpr GateState CONST_TRUE(
     [[maybe_unused]] ContainerT<T> const& container,
     [[maybe_unused]] MapFunction<T> mapper) noexcept
 {

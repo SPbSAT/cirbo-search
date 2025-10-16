@@ -1,7 +1,8 @@
 #include <iostream>
 #include <cstdint>
 
-#include <core/logic.hpp>
+#include "core/logic.hpp"
+#include "core/operators.hpp"
 
 int main(int argc, char* argv[]) {
 
