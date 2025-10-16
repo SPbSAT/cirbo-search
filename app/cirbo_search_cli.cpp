@@ -1,12 +1,12 @@
+#include <CLI/CLI.hpp>
+#include <cstdint>
+#include <iostream>
+
 #include "core/logic.hpp"
 #include "core/operators.hpp"
 
-#include <CLI/CLI.hpp>
-
-#include <iostream>
-#include <cstdint>
-
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     CLI::App app{"Cirbo-Search CLI"};
 
     bool verbose = false;
