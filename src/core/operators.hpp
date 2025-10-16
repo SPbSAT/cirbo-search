@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cassert>
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <vector>
 
@@ -39,7 +39,7 @@ inline GateState AND(GateState a, GateState b, GateState /*unused*/ = GateState:
     static GateState const table_[GateStateNumber * GateStateNumber]{
         GateState::FALSE,
         GateState::FALSE,
-        GateState::FALSE,      // GateState::FALSE
+        GateState::FALSE,  // GateState::FALSE
         GateState::FALSE,
         GateState::TRUE,
         GateState::UNDEFINED,  // GateState::TRUE
@@ -58,7 +58,7 @@ inline GateState OR(GateState a, GateState b, GateState /*unused*/ = GateState::
         GateState::UNDEFINED,  // GateState::FALSE
         GateState::TRUE,
         GateState::TRUE,
-        GateState::TRUE,      // GateState::TRUE
+        GateState::TRUE,  // GateState::TRUE
         GateState::UNDEFINED,
         GateState::TRUE,
         GateState::UNDEFINED,  // GateState::UNDEFINED
@@ -87,7 +87,7 @@ inline GateState NAND(GateState a, GateState b, GateState /*unused*/ = GateState
     static GateState const table_[GateStateNumber * GateStateNumber]{
         GateState::TRUE,
         GateState::TRUE,
-        GateState::TRUE,      // GateState::FALSE
+        GateState::TRUE,  // GateState::FALSE
         GateState::TRUE,
         GateState::FALSE,
         GateState::UNDEFINED,  // GateState::TRUE
@@ -106,7 +106,7 @@ inline GateState NOR(GateState a, GateState b, GateState /*unused*/ = GateState:
         GateState::UNDEFINED,  // GateState::FALSE
         GateState::FALSE,
         GateState::FALSE,
-        GateState::FALSE,      // GateState::TRUE
+        GateState::FALSE,  // GateState::TRUE
         GateState::UNDEFINED,
         GateState::FALSE,
         GateState::UNDEFINED,  // GateState::UNDEFINED
@@ -148,10 +148,10 @@ inline GateState MUX(GateState x, GateState y, GateState z) noexcept
         // x is FALSE, then we take value of y
         GateState::FALSE,
         GateState::FALSE,
-        GateState::FALSE,      // GateState::FALSE
+        GateState::FALSE,  // GateState::FALSE
         GateState::TRUE,
         GateState::TRUE,
-        GateState::TRUE,      // GateState::TRUE
+        GateState::TRUE,  // GateState::TRUE
         GateState::UNDEFINED,
         GateState::UNDEFINED,
         GateState::UNDEFINED,  // GateState::UNDEFINED
@@ -177,7 +177,8 @@ inline GateState MUX(GateState x, GateState y, GateState z) noexcept
         GateState::UNDEFINED,  // GateState::UNDEFINED
     };
     return table_
-        [0 + (static_cast<uint8_t>(x) * TABLE_SIZE_X) + (static_cast<uint8_t>(y) * GateStateNumber) + static_cast<uint8_t>(z)];
+        [0 + (static_cast<uint8_t>(x) * TABLE_SIZE_X) + (static_cast<uint8_t>(y) * GateStateNumber) +
+         static_cast<uint8_t>(z)];
 }
 
 inline GateState CONST_FALSE(
