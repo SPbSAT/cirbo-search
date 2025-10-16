@@ -20,7 +20,7 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_TYPE: Release
+  BUILD_TYPE: Debug
   LINTER_BUILD_TYPE: Debug
 
 jobs:
@@ -37,7 +37,7 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{github.workspace}}
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCIRBO_SEARCH_BUILD_TESTS=1 -DCIRBO_SEARCH_APP_DEBUG=1 -DCIRBO_SEARCH_APP_SANITIZE=1
 
     - name: Build
       working-directory: ${{github.workspace}}
@@ -45,7 +45,7 @@ jobs:
 
     - name: Unit Test
       working-directory: ${{github.workspace}}/build/tests/
-      run: ./UnitTests
+      run: ./cirbo_search_tests
 
   # Check if there are files which need to be formatted.
   formatting-check:
