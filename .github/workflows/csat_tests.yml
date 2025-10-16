@@ -86,4 +86,4 @@ jobs:
 
       - name: Run clang-tidy
         working-directory: ${{github.workspace}}
-        run: clang-tidy ./src/**/*.* -p build/ --config-file=.clang-tidy
+        run: clang-tidy app/**.cpp --header-filter='^'"$PWD"'/src/.*' -p build/ --config-file=.clang-tidy
