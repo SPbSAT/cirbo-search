@@ -1,0 +1,77 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_EXTENSIONS": "OFF"
+      }
+    },
+
+    {
+      "name": "release",
+      "displayName": "Release (CLI optimized)",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CIRBO_SEARCH_BUILD_APP": "ON",
+        "CIRBO_SEARCH_BUILD_TESTS": "OFF",
+
+        "CIRBO_SEARCH_APP_OFAST": "ON",
+        "CIRBO_SEARCH_APP_UNROLL": "ON",
+        "CIRBO_SEARCH_APP_NATIVE": "ON"
+      }
+    },
+
+    {
+      "name": "debug",
+      "displayName": "Debug (CLI debug profile)",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CIRBO_SEARCH_BUILD_APP": "ON",
+        "CIRBO_SEARCH_BUILD_TESTS": "ON",
+
+        "CIRBO_SEARCH_APP_DEBUG": "ON",
+        "CIRBO_SEARCH_APP_SANITIZE": "ON",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+
+    {
+      "name": "tests",
+      "displayName": "Tests (with sanitizers)",
+      "inherits": "base",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CIRBO_SEARCH_BUILD_APP": "OFF",
+        "CIRBO_SEARCH_BUILD_TESTS": "ON"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    { "name": "release", "configurePreset": "release" },
+    { "name": "debug",   "configurePreset": "debug"   },
+    { "name": "tests",   "configurePreset": "tests", "targets": [ "cirbo_search_tests" ] }
+  ],
+
+  "testPresets": [
+    {
+      "name": "tests",
+      "configurePreset": "tests",
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error", "stopOnFailure": false }
+    }
+  ]
+}

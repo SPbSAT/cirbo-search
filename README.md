@@ -6,15 +6,11 @@ Library for boolean circuit synthesis and minimization.
 1. Install dev dependencies: `clang-tidy, clang-formatter`
 1. Update submodules `git submodule update --init --recursive`.
 2. Open project in IDE (e.g. `CLion`).
-3. Setup CMake profiles:
+3. CMake profiles set in `CMakeProfiles.json` (for `CLion` one needs to enable them in profile setup section of settings)
 
 For `DEBUG` profile:
   ```
   -DCMAKE_BUILD_TYPE=DEBUG -DCIRBO_SEARCH_BUILD_TESTS=1 -DCIRBO_SEARCH_APP_DEBUG=1 -DCIRBO_SEARCH_APP_SANITIZE=1
-  ```
-  For `RELEASE` profile:
-  ```
-  -DCMAKE_BUILD_TYPE=RELEASE -DCIRBO_SEARCH_APP_NATIVE=1 -DCIRBO_SEARCH_APP_OFAST=1 -DCIRBO_SEARCH_APP_UNROLL=1
   ```
 
 ## Project Structure
