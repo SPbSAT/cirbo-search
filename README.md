@@ -17,7 +17,7 @@ For `DEBUG` profile:
 
 Sources:
 - `app/` contains source files for executables, which use main library.
-- `src/` contains source files organized as header-only library.
+- `` contains source files organized as header-only library.
 - `third_party/` contains source files for third-party libraries.
 
 Data:
@@ -30,7 +30,7 @@ Auxiliary:
 
 ### Library Structure
 
-Directory `src/` contains main source files of library and is organized as follows:
+Directory `` contains main source files of library and is organized as follows:
 - `core/` defines core types and structures:
   - `algorithms/` defines general algorithms for graphs and boolean circuits specifically.
   - `structure/` defines core (data) structs used in the library.

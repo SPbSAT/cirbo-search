@@ -7,6 +7,7 @@ project(
         LANGUAGES CXX)
 
 # Build options.
+option(CIRBO_ENABLE_DEBUG_LOGGING "Enable DEBUG level of logs" OFF)
 option(CIRBO_SEARCH_BUILD_APP "Build CLI app" ON)
 option(CIRBO_SEARCH_BUILD_TESTS "Build tests (Catch2 required)" OFF)
 
@@ -37,7 +38,7 @@ target_include_directories(cirbo_search
 
 file(GLOB_RECURSE CIRBO_SEARCH_HEADERS
         CONFIGURE_DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp"
 )
 target_sources(cirbo_search INTERFACE
         FILE_SET HEADERS

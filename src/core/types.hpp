@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CIRBO_SEARCH_CORE_TYPES_HPP
+#define CIRBO_SEARCH_CORE_TYPES_HPP
 
 #include <cstddef>
 #include <cstdint>
@@ -10,9 +11,9 @@
 namespace cirbo
 {
 
-// One place to config usage of `vector<char>` or `vector<bool>`.
-// Because `vector<bool>` is a specific template specialization.
-using BoolVector = std::vector<char>;
+// One place to choose what to use: `vector<char>` or `vector<bool>`.
+// (`vector<bool>` is a specific template specialization).
+using BoolVector = std::vector<bool>;
 
 /** Minimum arity of a logical function. **/
 enum class MinArity : uint8_t
@@ -26,7 +27,7 @@ enum class MinArity : uint8_t
 /** Possible states of gates. **/
 enum class GateState : uint8_t
 {
-    // if changed, then csat::op must be changed as well
+    // if changed, then cirbo::op must be changed as well
     FALSE     = 0,
     TRUE      = 1,
     UNDEFINED = 2
@@ -38,7 +39,7 @@ constexpr size_t GateStateNumber = 3;
 /** Possible types of gates. **/
 enum class GateType : uint8_t
 {
-    // if changed, then csat::op must be changed as well
+    // if changed, then cirbo::op must be changed as well
     INPUT = 0,
     NOT   = 1,
     AND   = 2,
@@ -64,13 +65,22 @@ constexpr size_t FirstOperatorIdx = 1;
 /**
  * @return index of gateType among all gate operator types.
  */
-inline size_t getIndexByOperator(GateType gateType)
-{
-    return static_cast<size_t>(gateType) - FirstOperatorIdx;
-}
+inline size_t getIndexByOperator(GateType gateType) { return static_cast<size_t>(gateType) - FirstOperatorIdx; }
 
 /** Internal gate ids are numbers 0,1,2... **/
 using GateId          = size_t;
 using GateIdContainer = std::vector<GateId>;
 
+
+// FIXME: maybe basis should guarantee strictness.
+//
+/** Type of circuit basis (set of allowed operators). **/
+enum class Basis : uint8_t
+{
+    BENCH,
+    AIG
+};
+
 }  // namespace cirbo
+
+#endif  // CIRBO_SEARCH_CORE_TYPES_HPP

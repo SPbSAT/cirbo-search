@@ -23,6 +23,10 @@ option(CIRBO_SEARCH_APP_UNROLL "Force loop unrolling flags" OFF)
 # Specific architecture (MSVC: /arch:AVX2; gcc/clang: -march=<val>)
 set(CIRBO_SEARCH_APP_ARCH "" CACHE STRING "Override CPU arch (e.g. native, x86-64-v3, znver3, skylake; MSVC: AVX2)")
 
+if (CIRBO_ENABLE_DEBUG_LOGGING)
+    target_compile_definitions(cirbo_search_cli PRIVATE CIRBO_ENABLE_DEBUG_LOGGING)
+endif()
+
 if (CIRBO_SEARCH_APP_DEBUG)
     # --- Debug profile ------------------------------------------------------------
     if (MSVC)
