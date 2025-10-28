@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "core/algo.hpp"
+#include "logger.hpp"
 #include "minimization/transformer_base.hpp"
 #include "utils/cast.hpp"
-#include "logger.hpp"
 
 namespace cirbo::minimization
 {
@@ -30,7 +30,7 @@ namespace cirbo::minimization
 template<class CircuitT, typename = std::enable_if_t<std::is_base_of_v<ICircuit, CircuitT> > >
 class DuplicateGatesCleaner_ : public ITransformer<CircuitT>
 {
-  public:
+public:
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
         std::unique_ptr<NameEncoder> encoder)
@@ -113,7 +113,7 @@ class DuplicateGatesCleaner_ : public ITransformer<CircuitT>
         return {std::make_unique<CircuitT>(gate_info, new_output_gates), std::make_unique<NameEncoder>(new_encoder)};
     };
 
-  private:
+private:
     /**
      * Formats new auxiliary name for the gate based on its attributes (type, operands).
      * Such name may be used to determine literal duplicates in the circuit.
@@ -174,10 +174,7 @@ class DuplicateGatesCleaner_ : public ITransformer<CircuitT>
         }
 
         // Adds names of gate's operands to its auxiliary name.
-        for (GateId operand : prepared_operands)
-        {
-            auxiliary_name << '_' + std::to_string(operand);
-        }
+        for (GateId operand : prepared_operands) { auxiliary_name << '_' + std::to_string(operand); }
 
         return auxiliary_name.str();
     };
@@ -187,20 +184,14 @@ class DuplicateGatesCleaner_ : public ITransformer<CircuitT>
         std::unordered_map<GateId, GateId> const& encoder)
     {
         std::stringstream ss;
-        if (operands.empty())
-        {
-            return ss;
-        }
+        if (operands.empty()) { return ss; }
 
         ss << encoder.at(operands[0]);
-        for (auto ptr = operands.begin() + 1; ptr != operands.end(); ++ptr)
-        {
-            ss << ',' << encoder.at(*ptr);
-        }
+        for (auto ptr = operands.begin() + 1; ptr != operands.end(); ++ptr) { ss << ',' << encoder.at(*ptr); }
         return ss;
     }
 };
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_DUPLICATE_GATES_CLEANER_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_DUPLICATE_GATES_CLEANER_HPP

@@ -7,8 +7,8 @@
 #include <type_traits>
 #include <utility>
 
-#include "core/types.hpp"
 #include "core/structures/icircuit.hpp"
+#include "core/types.hpp"
 #include "utils/encoder.hpp"
 #include "utils/random.hpp"
 
@@ -28,7 +28,7 @@ using CircuitAndEncoder = std::pair<std::unique_ptr<CircuitT>, std::unique_ptr<N
 template<class CircuitT, typename = std::enable_if_t<std::is_base_of_v<ICircuit, CircuitT>>>
 class ITransformer
 {
-  public:
+public:
     virtual ~ITransformer() = default;
 
     CircuitAndEncoder<CircuitT, std::string> apply(CircuitT const& circuit, NameEncoder const& encoder)
@@ -52,16 +52,10 @@ static std::string getUniqueId_()
     return std::to_string(dist(engine));
 }
 
-inline std::string getNewGateName_(std::string const& prefix, GateId id)
-{
-    return prefix + std::to_string(id);
-}
+inline std::string getNewGateName_(std::string const& prefix, GateId id) { return prefix + std::to_string(id); }
 
-inline std::string getNewGateName_(std::string const& prefix, std::string&& id)
-{
-    return prefix + id;
-}
+inline std::string getNewGateName_(std::string const& prefix, std::string&& id) { return prefix + id; }
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_TRANSFORMER_BASE_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_TRANSFORMER_BASE_HPP

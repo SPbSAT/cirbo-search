@@ -12,12 +12,12 @@
 #include <vector>
 
 #include "core/algo.hpp"
-#include "core/types.hpp"
-#include "minimization/transformer_base.hpp"
-#include "core/structures/vector_assignment.hpp"
 #include "core/structures/gate_info.hpp"
-#include "utils/cast.hpp"
+#include "core/structures/vector_assignment.hpp"
+#include "core/types.hpp"
 #include "logger.hpp"
+#include "minimization/transformer_base.hpp"
+#include "utils/cast.hpp"
 
 namespace cirbo::minimization
 {
@@ -42,7 +42,7 @@ namespace cirbo::minimization
 template<class CircuitT>
 class ConstantGateReducer_ : public ITransformer<CircuitT>
 {
-  public:
+public:
     /**
      * Applies ConstantGateReducer_ transformer to `circuit`
      * @param circuit -- circuit to transform.
@@ -109,10 +109,7 @@ class ConstantGateReducer_ : public ITransformer<CircuitT>
                         // of type OR. So we will not consider it. As for XOR and NXOR, we simply skip operands with the
                         // value FALSE. And we count the number of operands with the value TRUE, then it will be
                         // necessary to change the gate type to the opposite.
-                        if (op_state == GateState::UNDEFINED)
-                        {
-                            operands.push_back(operand);
-                        }
+                        if (op_state == GateState::UNDEFINED) { operands.push_back(operand); }
                     }
 
                     // Change the gate to the opposite.
@@ -233,7 +230,7 @@ class ConstantGateReducer_ : public ITransformer<CircuitT>
             std::make_unique<NameEncoder>(*encoder)};
     };
 
-  private:
+private:
     /**
      * Give a link either to the gate itself, or to the gate where the users of the gate should refer.
      * @param gate_id gate's id for which you need to find a link
@@ -243,10 +240,7 @@ class ConstantGateReducer_ : public ITransformer<CircuitT>
      */
     GateId getLink_(GateId gate_id, std::vector<GateId> const& old_to_new_gateId)
     {
-        if (old_to_new_gateId.at(gate_id) != SIZE_MAX)
-        {
-            return old_to_new_gateId.at(gate_id);
-        }
+        if (old_to_new_gateId.at(gate_id) != SIZE_MAX) { return old_to_new_gateId.at(gate_id); }
         return gate_id;
     }
 
@@ -295,14 +289,8 @@ class ConstantGateReducer_ : public ITransformer<CircuitT>
         gate_info.emplace_back(GateType::NOT, GateIdContainer{left});
 
         encoder.encodeGate(getNewGateName_(new_gate_name_prefix, output));
-        if (gate_state == GateState::TRUE)
-        {
-            gate_info.emplace_back(GateType::OR, GateIdContainer{left, right});
-        }
-        else
-        {
-            gate_info.emplace_back(GateType::AND, GateIdContainer{left, right});
-        }
+        if (gate_state == GateState::TRUE) { gate_info.emplace_back(GateType::OR, GateIdContainer{left, right}); }
+        else { gate_info.emplace_back(GateType::AND, GateIdContainer{left, right}); }
 
         // Add recently build output to vector of new output gates.
         new_output_gates.push_back(output);
@@ -311,4 +299,4 @@ class ConstantGateReducer_ : public ITransformer<CircuitT>
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_CONSTANT_GATE_REDUCER_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_CONSTANT_GATE_REDUCER_HPP

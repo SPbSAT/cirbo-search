@@ -29,11 +29,14 @@ public:
     virtual void ensureCapacity(GateId) = 0;
 
     /* Returns state of gate `gateId`. Must return UNDEFINED when GateId is not assigned yet. */
-    [[nodiscard]] virtual GateState getGateState(GateId) const = 0;
+    [[nodiscard]]
+    virtual GateState getGateState(GateId) const = 0;
     /* Returns True iff gate state is not set or is explicitly set UNDEFINED. */
-    [[nodiscard]] virtual bool isUndefined(GateId) const = 0;
+    [[nodiscard]]
+    virtual bool isUndefined(GateId) const = 0;
     /* Returns True iff gate state is set and not UNDEFINED. */
-    [[nodiscard]] virtual bool isDefined(GateId gateId) const = 0;
+    [[nodiscard]]
+    virtual bool isDefined(GateId gateId) const = 0;
 };
 
 }  // namespace cirbo

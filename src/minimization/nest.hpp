@@ -7,9 +7,9 @@
 #include <type_traits>
 #include <utility>
 
+#include "core/structures/icircuit.hpp"
 #include "minimization/composition.hpp"
 #include "minimization/transformer_base.hpp"
-#include "core/structures/icircuit.hpp"
 
 namespace cirbo::minimization
 {
@@ -31,7 +31,7 @@ struct Nest : virtual ITransformer<CircuitT>
         "All simplifier template args of Composition must implement "
         "ITransformer and be parametrized with CircuitT type.");
 
-  public:
+public:
     /**
      * Applies all defined in template TransformersT to
      * `circuit` `n` times, in left-to-right order. For example,
@@ -62,4 +62,4 @@ struct Nest : virtual ITransformer<CircuitT>
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_NEST_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_NEST_HPP

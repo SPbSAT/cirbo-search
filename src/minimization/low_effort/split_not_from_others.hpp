@@ -1,15 +1,15 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP
 #define CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP
 
-#include "minimization/transformer_base.hpp"
+#include <algorithm>
+#include <memory>
+#include <ranges>
+#include <type_traits>
+#include <vector>
+
 #include "core/algo.hpp"
 #include "logger.hpp"
-
-#include <algorithm>
-#include <ranges>
-#include <vector>
-#include <type_traits>
-#include <memory>
+#include "minimization/transformer_base.hpp"
 
 namespace cirbo::minimization
 {
@@ -31,23 +31,23 @@ namespace cirbo::minimization
 template<class CircuitT>
 class SplitNotFromOthers_ : public ITransformer<CircuitT>
 {
-  public:
+public:
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
         std::unique_ptr<NameEncoder> encoder)
     {
-        static const std::map<GateType, GateType> inverse_type = {
+        static std::map<GateType, GateType> const inverse_type = {
             {GateType::NAND, GateType::AND},
-            {GateType::NOR, GateType::OR},
-            {GateType::NXOR, GateType::XOR}};
-        
+            {GateType::NOR,  GateType::OR },
+            {GateType::NXOR, GateType::XOR}
+        };
+
         log::debug("START SplitNotFromOthers");
-        cirbo::GateIdContainer sorted_gates(
-            algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
-        
+        cirbo::GateIdContainer sorted_gates(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
+
         size_t circuit_size = circuit->getNumberOfGates();
         GateInfoContainer gate_info(circuit_size);
-    
+
         for (auto gateId : std::ranges::reverse_view(sorted_gates))
         {
             // В качестве ключей мапы `inverse_type` выступают только отрицания операторов.
@@ -55,45 +55,37 @@ class SplitNotFromOthers_ : public ITransformer<CircuitT>
             {
                 // Разделяем NAND/NOR/NXOR на NOT(AND)/NOT(OR)/NOT(XOR) и переподвешиваем.
                 // Например: User'ы NAND теперь будут указывать на NOT(AND).
-                
+
                 // Инвертированный гейт получает новый id.
-                GateId new_gate_id = encoder->encodeGate(
-                    "new_gate_split_not_with_others@" + std::to_string(circuit_size));
+                GateId new_gate_id =
+                    encoder->encodeGate("new_gate_split_not_with_others@" + std::to_string(circuit_size));
                 gate_info.emplace_back(
                     inverse_type.at(circuit->getGateType(gateId)),
                     // Оставляем старые операнды т.к. они либо не изменились, либо стали NOT'ами.
                     circuit->getGateOperands(gateId));
-    
+
                 assert(new_gate_id == circuit_size);
                 ++circuit_size;
                 assert(gate_info.size() == circuit_size);
-                
+
                 // Соответствующий ему NOT будет кодироваться старым id,
                 // т.к. эквивалентен старому гейту.
-                gate_info.at(gateId) = {
-                    GateType::NOT,
-                    GateIdContainer{new_gate_id}};
+                gate_info.at(gateId) = {GateType::NOT, GateIdContainer{new_gate_id}};
             }
             else
             {
                 // Берем гейт "as is".
-                gate_info.at(gateId) = {
-                    circuit->getGateType(gateId),
-                    circuit->getGateOperands(gateId)};
+                gate_info.at(gateId) = {circuit->getGateType(gateId), circuit->getGateOperands(gateId)};
             }
         }
         log::debug("END SplitNotFromOthers");
-        
+
         return {
-            std::make_unique<CircuitT>(
-                std::move(gate_info),
-                circuit->getOutputGates()),
-            std::make_unique<NameEncoder>(*encoder)
-        };
+            std::make_unique<CircuitT>(std::move(gate_info), circuit->getOutputGates()),
+            std::make_unique<NameEncoder>(*encoder)};
     };
-  
 };
 
-} // csat namespace
+}  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP

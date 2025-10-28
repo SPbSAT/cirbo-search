@@ -36,7 +36,7 @@ public:
         : id_(std::exchange(node.id_, 0))
         , type_(std::exchange(node.type_, GateType::UNDEFINED))
         , operands_(std::exchange(node.operands_, {}))
-        , users_(std::exchange(node.users_, {})) {};
+        , users_(std::exchange(node.users_, {})){};
 
     Node_(
         GateId const gateId,

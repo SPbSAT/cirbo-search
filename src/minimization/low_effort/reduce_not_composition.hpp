@@ -7,11 +7,11 @@
 #include <vector>
 
 #include "core/algo.hpp"
-#include "core/types.hpp"
-#include "minimization/transformer_base.hpp"
 #include "core/structures/gate_info.hpp"
 #include "core/structures/icircuit.hpp"
+#include "core/types.hpp"
 #include "logger.hpp"
+#include "minimization/transformer_base.hpp"
 
 namespace cirbo::minimization
 {
@@ -27,10 +27,10 @@ namespace cirbo::minimization
 template<class CircuitT, typename = std::enable_if_t<std::is_base_of_v<ICircuit, CircuitT>>>
 class ReduceNotComposition_ : public ITransformer<CircuitT>
 {
-  private:
+private:
     std::set<GateType> validParams;
 
-  public:
+public:
     /**
      * Applies ReduceNotComposition_ transformer to `circuit`
      * @param circuit -- circuit to transform.
@@ -60,10 +60,7 @@ class ReduceNotComposition_ : public ITransformer<CircuitT>
                 {
                     new_operands_.push_back(get_operand(*circuit, operands));
                 }
-                else
-                {
-                    new_operands_.push_back(operands);
-                }
+                else { new_operands_.push_back(operands); }
             }
             gate_info.at(gateId) = {circuit->getGateType(gateId), new_operands_};
         }
@@ -75,7 +72,7 @@ class ReduceNotComposition_ : public ITransformer<CircuitT>
             std::make_unique<CircuitT>(gate_info, circuit->getOutputGates()), std::make_unique<NameEncoder>(*encoder)};
     };
 
-  private:
+private:
     /**
      * Receives gate's ID which type is NOT. If the operand of this gate is also NOT, then the algorithm
      * looks at the operand of this (finded) gate and so on until it reaches an operand whose type is not NOT.
@@ -97,17 +94,11 @@ class ReduceNotComposition_ : public ITransformer<CircuitT>
             check_gate = circuit.getGateOperands(gateId).at(0);
         }
 
-        if (flag)
-        {
-            return check_gate;
-        }
-        else
-        {
-            return gateId;
-        }
+        if (flag) { return check_gate; }
+        else { return gateId; }
     }
 };
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_REDUCE_NOT_COMPOSITION_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_REDUCE_NOT_COMPOSITION_HPP

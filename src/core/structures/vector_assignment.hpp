@@ -24,50 +24,46 @@ private:
     StateVector gate_states_;
 
 public:
-
     VectorAssignment()           = default;
     ~VectorAssignment() override = default;
 
-    VectorAssignment(const VectorAssignment&) = default;
-    VectorAssignment(VectorAssignment&&)      = default;
-    VectorAssignment& operator=(const VectorAssignment&) = default;
-    VectorAssignment& operator=(VectorAssignment&&) = default;
+    VectorAssignment(VectorAssignment const&)            = default;
+    VectorAssignment(VectorAssignment&&)                 = default;
+    VectorAssignment& operator=(VectorAssignment const&) = default;
+    VectorAssignment& operator=(VectorAssignment&&)      = default;
 
-    explicit VectorAssignment(size_t const numberOfGates) : gate_states_(numberOfGates, GateState::UNDEFINED) {}
+    explicit VectorAssignment(size_t const numberOfGates)
+        : gate_states_(numberOfGates, GateState::UNDEFINED)
+    {
+    }
 
     void assign(GateId const gateId, GateState const state) override
     {
-        if constexpr (DynamicResize)
-        {
-            ensureCapacity(gateId);
-        }
+        if constexpr (DynamicResize) { ensureCapacity(gateId); }
         gate_states_.at(gateId) = state;
     }
 
-    [[nodiscard]] GateState getGateState(GateId const gateId) const override
+    [[nodiscard]]
+    GateState getGateState(GateId const gateId) const override
     {
-        if (containsValueFor_(gateId))
-        {
-            return gate_states_.at(gateId);
-        }
+        if (containsValueFor_(gateId)) { return gate_states_.at(gateId); }
 
         return GateState::UNDEFINED;
     }
 
-    [[nodiscard]] bool isUndefined(GateId const gateId) const override
+    [[nodiscard]]
+    bool isUndefined(GateId const gateId) const override
     {
         return getGateState(gateId) == GateState::UNDEFINED;
     }
 
-    [[nodiscard]] bool isDefined(GateId const gateId) const override
+    [[nodiscard]]
+    bool isDefined(GateId const gateId) const override
     {
         return getGateState(gateId) != GateState::UNDEFINED;
     }
 
-    void clear() noexcept override
-    {
-        gate_states_.clear();
-    }
+    void clear() noexcept override { gate_states_.clear(); }
 
     void ensureCapacity(GateId const sz) override
     {

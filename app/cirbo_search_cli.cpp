@@ -36,10 +36,7 @@ std::ifstream openFileStream(std::string const& file_path)
 /**
  * Writes resulting circuit either to an output file, or to the stdout if first is not given.
  */
-void writeResult(
-    DAG const& simplified_circuit,
-    utils::NameEncoder const& encoder,
-    std::string const& output_path)
+void writeResult(DAG const& simplified_circuit, utils::NameEncoder const& encoder, std::string const& output_path)
 {
     std::ofstream file_out(output_path);
     io::writers::writeBenchFile(simplified_circuit, encoder, file_out);
@@ -48,14 +45,13 @@ void writeResult(
 /**
  * Helper to run specific simplification strategies on the circuit.
  */
-std::tuple<std::unique_ptr<DAG>, std::unique_ptr<utils::NameEncoder> > applySimplification(
+std::tuple<std::unique_ptr<DAG>, std::unique_ptr<utils::NameEncoder>> applySimplification(
     std::unique_ptr<DAG>& csat_instance,
     utils::NameEncoder& encoder)
 {
-    return minimization::Composition<
-            DAG,
-            minimization::DuplicateGatesCleaner<DAG>,
-            minimization::DuplicateOperandsCleaner<DAG>>().apply(*csat_instance, encoder);
+    return minimization::
+        Composition<DAG, minimization::DuplicateGatesCleaner<DAG>, minimization::DuplicateOperandsCleaner<DAG>>()
+            .apply(*csat_instance, encoder);
 }
 
 /**
@@ -63,11 +59,8 @@ std::tuple<std::unique_ptr<DAG>, std::unique_ptr<utils::NameEncoder> > applySimp
  *
  * @param input_file path to the input circuit.
  */
-void minimize(
-    std::string const& input_file,
-    std::string const& output_file)
+void minimize(std::string const& input_file, std::string const& output_file)
 {
-
     log::debug("Opening circuit file at ", input_file, ".");
     auto fstream = openFileStream(input_file);
 
@@ -83,12 +76,12 @@ void minimize(
     auto [simplified_instance, simplified_encoder] = applySimplification(csat_instance, encoder);
     log::debug(input_file, ": simplification end.");
 
-    auto timeEnd           = std::chrono::steady_clock::now();
+    auto timeEnd = std::chrono::steady_clock::now();
 
     writeResult(*simplified_instance, *simplified_encoder, output_file);
 }
 
-} // namespace
+}  // namespace
 
 int main(int const argc, char** argv)
 {
@@ -98,7 +91,7 @@ int main(int const argc, char** argv)
 
         std::string input_file;
         std::string output_file;
-        app.add_option("-i,--input-path", input_file,"directory with input .BENCH files (or a single .BENCH file)");
+        app.add_option("-i,--input-path", input_file, "directory with input .BENCH files (or a single .BENCH file)");
         app.add_option("-o,--output", output_file, "path to resulting directory or to a resulting single .BENCH file");
 
         CLI11_PARSE(app, argc, argv);

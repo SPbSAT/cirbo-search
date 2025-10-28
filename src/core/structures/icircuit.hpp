@@ -27,8 +27,8 @@ namespace cirbo
 class ICircuit
 {
 public:
-    ICircuit()                = default;
-    virtual ~ICircuit()       = default;
+    ICircuit()          = default;
+    virtual ~ICircuit() = default;
 
     ICircuit(GateInfoContainer const& /*unused*/, GateIdContainer const& /*unused*/){};
 
@@ -82,10 +82,7 @@ public:
 protected:
     void evaluateCircuit_(GateIdContainer const& sinks, IAssignment const& input_asmt, IAssignment* internal_asmt) const
     {
-        for (auto const sink : sinks)
-        {
-            evaluateGate_(sink, input_asmt, internal_asmt);
-        }
+        for (auto const sink : sinks) { evaluateGate_(sink, input_asmt, internal_asmt); }
     }
 
     /* Internal purpose gate evaluation. */
@@ -99,7 +96,7 @@ protected:
         auto get_gate_state_ = [&input_asmt, &internal_asmt](GateId const operand)
         {
             return internal_asmt->isUndefined(operand) ? input_asmt.getGateState(operand)
-                                                   : internal_asmt->getGateState(operand);
+                                                       : internal_asmt->getGateState(operand);
         };
 
         while (!queue_.empty())
@@ -139,7 +136,6 @@ protected:
         return internal_asmt->getGateState(gateId);
     }
 };
-
 
 /**
  * Extension for the ICircuit interfaces that provides methods to mutate circuit topology.

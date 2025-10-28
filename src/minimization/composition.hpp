@@ -5,8 +5,8 @@
 #include <string>
 #include <type_traits>
 
-#include "minimization/transformer_base.hpp"
 #include "core/structures/icircuit.hpp"
+#include "minimization/transformer_base.hpp"
 
 namespace cirbo::minimization
 {
@@ -27,7 +27,7 @@ struct Composition : public ITransformer<CircuitT>
         "All simplifier template args of Composition must implement "
         "ITransformer and be parametrized with CircuitT type.");
 
-  public:
+public:
     /**
      * Applies all defined in template TransformersT to
      * `circuit`, in left-to-right order. For example,
@@ -59,7 +59,7 @@ struct Composition : public ITransformer<CircuitT>
 template<class CircuitT, class TransformerT>
 struct Composition<CircuitT, TransformerT> : public ITransformer<CircuitT>
 {
-  public:
+public:
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
         std::unique_ptr<NameEncoder> encoder)
@@ -71,4 +71,4 @@ struct Composition<CircuitT, TransformerT> : public ITransformer<CircuitT>
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_COMPOSITION_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_COMPOSITION_HPP

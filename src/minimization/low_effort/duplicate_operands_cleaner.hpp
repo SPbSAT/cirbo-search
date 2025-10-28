@@ -12,11 +12,11 @@
 #include <vector>
 
 #include "core/algo.hpp"
-#include "core/types.hpp"
-#include "minimization/transformer_base.hpp"
 #include "core/structures/gate_info.hpp"
-#include "utils/cast.hpp"
+#include "core/types.hpp"
 #include "logger.hpp"
+#include "minimization/transformer_base.hpp"
+#include "utils/cast.hpp"
 
 namespace cirbo::minimization
 {
@@ -43,11 +43,11 @@ namespace cirbo::minimization
 template<class CircuitT>
 class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
 {
-  private:
+private:
     size_t id_const_true  = SIZE_MAX;
     size_t id_const_false = SIZE_MAX;
 
-  public:
+public:
     /**
      * Applies DuplicateOperandsCleaner_ transformer to `circuit`
      * @param circuit -- circuit to transform.
@@ -134,14 +134,8 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
                 {
                     // If, as a result of counting of the operands, an empty map is obtained
                     // (it can be in gates of type XOR or NXOR), then we know their assignment.
-                    if (gate_type == GateType::XOR)
-                    {
-                        old_to_new_gateId.at(gate_id) = id_const_false;
-                    }
-                    else
-                    {
-                        old_to_new_gateId.at(gate_id) = id_const_true;
-                    }
+                    if (gate_type == GateType::XOR) { old_to_new_gateId.at(gate_id) = id_const_false; }
+                    else { old_to_new_gateId.at(gate_id) = id_const_true; }
                 }
                 else
                 {
@@ -215,14 +209,8 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
                 }
                 else if (operands.empty())
                 {
-                    if (gate_type == GateType::XOR)
-                    {
-                        old_to_new_gateId.at(gate_id) = id_const_false;
-                    }
-                    else
-                    {
-                        old_to_new_gateId.at(gate_id) = id_const_true;
-                    }
+                    if (gate_type == GateType::XOR) { old_to_new_gateId.at(gate_id) = id_const_false; }
+                    else { old_to_new_gateId.at(gate_id) = id_const_true; }
                 }
                 // If the gate is left with 2+ operands, then it is considered syntactically correct
                 // and nothing more needs to be done with it and its users.
@@ -268,7 +256,7 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
             std::make_unique<NameEncoder>(*encoder)};
     };
 
-  private:
+private:
     /**
      * Counts how many operands are in the gate and which ones specifically,
      * and also reduces them if possible
@@ -298,10 +286,7 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
             {
                 //  For gates like XOR and NXOR we want to remove duplicates modulo two.
                 value %= 2;
-                if (value == 0)
-                {
-                    delete_key.push_back(key);
-                }
+                if (value == 0) { delete_key.push_back(key); }
             }
         }
         else if (
@@ -309,20 +294,14 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
             gate_type == GateType::NOR)
         {
             // In the case of gates like AND, NAND, OR, NOR, we want to remove all duplicates
-            for (auto& [_, value] : map_count_operands)
-            {
-                value = 1;
-            }
+            for (auto& [_, value] : map_count_operands) { value = 1; }
         }
         else
         {
             //  the rest of the gates are left unchanged
         }
 
-        for (auto key : delete_key)
-        {
-            map_count_operands.erase(key);
-        }
+        for (auto key : delete_key) { map_count_operands.erase(key); }
 
         return map_count_operands;
     }
@@ -336,10 +315,7 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
      */
     GateId getLink_(GateId gate_id, std::vector<GateId> const& old_to_new_gateId)
     {
-        if (old_to_new_gateId.at(gate_id) != SIZE_MAX)
-        {
-            return old_to_new_gateId.at(gate_id);
-        }
+        if (old_to_new_gateId.at(gate_id) != SIZE_MAX) { return old_to_new_gateId.at(gate_id); }
         return gate_id;
     }
 
@@ -397,17 +373,11 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
         GateIdContainer operands{};
         for (auto [operand, value] : map_count_operands)
         {
-            for (size_t num_operands = 0; num_operands < value; ++num_operands)
-            {
-                operands.push_back(operand);
-            }
+            for (size_t num_operands = 0; num_operands < value; ++num_operands) { operands.push_back(operand); }
         }
 
         // If the number of pairs of opposite operands was odd, then add one auxiliary gate of the CONST_TRUE type.
-        if (number_of_pair % 2 == 1)
-        {
-            operands.push_back(id_const_true);
-        }
+        if (number_of_pair % 2 == 1) { operands.push_back(id_const_true); }
 
         return operands;
     }
@@ -415,4 +385,4 @@ class DuplicateOperandsCleaner_ : public ITransformer<CircuitT>
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_DUPLICATE_OPERANDS_CLEANER_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_DUPLICATE_OPERANDS_CLEANER_HPP

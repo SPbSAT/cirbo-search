@@ -1,14 +1,14 @@
 #ifndef CIRBO_SEARCH_LOGGER_HPP
 #define CIRBO_SEARCH_LOGGER_HPP
 
-#include "utils/optimize.hpp"
-
 #include <chrono>
 #include <cstdint>
 #include <ctime>
 #include <iostream>
 #include <string>
 #include <utility>
+
+#include "utils/optimize.hpp"
 
 namespace cirbo::log
 {
@@ -31,10 +31,7 @@ static constexpr auto CompileLogLevel = LogLevel::INFO;
 #endif
 
 // Basic logging to std::cout.
-CIRBO_OPT_FORCE_INLINE void LOG_OUT()
-{
-    std::cout << std::endl;
-}
+CIRBO_OPT_FORCE_INLINE void LOG_OUT() { std::cout << std::endl; }
 
 // Basic logging to std::cout.
 template<class T, class... Args>
@@ -45,10 +42,7 @@ CIRBO_OPT_FORCE_INLINE void LOG_OUT(T const& t, Args const&... args)
 }
 
 // Basic logging to std::cerr.
-CIRBO_OPT_FORCE_INLINE void LOG_ERR()
-{
-    std::cerr << std::endl;
-}
+CIRBO_OPT_FORCE_INLINE void LOG_ERR() { std::cerr << std::endl; }
 
 // Basic logging to std::cerr.
 template<class T, class... Args>
@@ -68,7 +62,9 @@ public:
 
 public:
     LoggerImpl() noexcept
-        : name("Logger"){}
+        : name("Logger")
+    {
+    }
 
     explicit LoggerImpl(std::string const& _name) noexcept
         : name(_name)
@@ -82,10 +78,7 @@ public:
 
     ~LoggerImpl() = default;
 
-    void setName(std::string const& new_name)
-    {
-        name = new_name;
-    }
+    void setName(std::string const& new_name) { name = new_name; }
 
     template<class T, class... Args>
     CIRBO_OPT_FORCE_INLINE void debug(T const& t, Args const&... args) const
@@ -123,7 +116,7 @@ public:
         }
     }
 
-  private:
+private:
     static CIRBO_OPT_FORCE_INLINE std::string _getCurrentTime()
     {
         auto cur_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());

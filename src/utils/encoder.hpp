@@ -31,23 +31,18 @@ public:
      */
     GateId encodeGate(std::string&& name)
     {
-        if (auto const it = map_.find(name); it != map_.end())
-        {
-            return it->second;
-        }
+        if (auto const it = map_.find(name); it != map_.end()) { return it->second; }
 
-        const auto id = static_cast<GateId>(gate_names_.size());
+        auto const id = static_cast<GateId>(gate_names_.size());
         gate_names_.push_back(std::move(name));
         map_.emplace(std::string(gate_names_.back()), id);
         return id;
     }
 
-    GateId encodeGate(std::string_view const name)
-    {
-        return encodeGate(std::string(name));
-    }
+    GateId encodeGate(std::string_view const name) { return encodeGate(std::string(name)); }
 
-    [[nodiscard]] std::string const& decodeGate(GateId const gateId) const
+    [[nodiscard]]
+    std::string const& decodeGate(GateId const gateId) const
     {
         return gate_names_.at(gateId);
     }
@@ -58,15 +53,24 @@ public:
         return map_.contains(key);
     };
 
-    [[nodiscard]] size_t size() const noexcept { return gate_names_.size(); }
-    [[nodiscard]] bool empty() const noexcept { return gate_names_.empty(); }
+    [[nodiscard]]
+    size_t size() const noexcept
+    {
+        return gate_names_.size();
+    }
+    [[nodiscard]]
+    bool empty() const noexcept
+    {
+        return gate_names_.empty();
+    }
 
-    void clear() noexcept {
+    void clear() noexcept
+    {
         gate_names_.clear();
         map_.clear();
     }
 };
 
-} // namespace cirbo::utils
+}  // namespace cirbo::utils
 
 #endif  // CIRBO_SEARCH_UTILS_ENCODER_HPP

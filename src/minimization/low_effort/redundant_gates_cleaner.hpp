@@ -8,12 +8,12 @@
 #include <utility>
 
 #include "core/algo.hpp"
-#include "core/types.hpp"
-#include "minimization/transformer_base.hpp"
 #include "core/structures/gate_info.hpp"
 #include "core/structures/icircuit.hpp"
-#include "utils/encoder.hpp"
+#include "core/types.hpp"
 #include "logger.hpp"
+#include "minimization/transformer_base.hpp"
+#include "utils/encoder.hpp"
 
 namespace cirbo::minimization
 {
@@ -31,7 +31,7 @@ template<
     typename            = std::enable_if_t<std::is_base_of_v<ICircuit, CircuitT>>>
 class RedundantGatesCleaner_ : public ITransformer<CircuitT>
 {
-  public:
+public:
     /**
      * Applies RedundantGatesCleaner_ transformer to `circuit`
      * @param circuit -- circuit to transform.
@@ -114,4 +114,4 @@ class RedundantGatesCleaner_ : public ITransformer<CircuitT>
 
 }  // namespace cirbo::minimization
 
-#endif // CIRBO_SEARCH_MINIMIZATION_REDUNDANT_GATES_CLEANER_HPP
+#endif  // CIRBO_SEARCH_MINIMIZATION_REDUNDANT_GATES_CLEANER_HPP

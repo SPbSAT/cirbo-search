@@ -7,8 +7,8 @@
 #include <stack>
 #include <vector>
 
-#include "core/types.hpp"
 #include "core/structures/dag.hpp"
+#include "core/types.hpp"
 
 /**
  * Namespace contains some algorithms for data structures,
@@ -88,10 +88,7 @@ DFSStateVector performDepthFirstSearch(
 
     auto enqueue_next = [&dfs_state, &queue_](GateId nextGateId) -> void
     {
-        if (dfs_state[nextGateId] == DFSState::UNVISITED)
-        {
-            queue_.push(nextGateId);
-        }
+        if (dfs_state[nextGateId] == DFSState::UNVISITED) { queue_.push(nextGateId); }
     };
 
     for (auto start : startGates)
@@ -162,7 +159,7 @@ struct TopSortAlgorithm
 template<>
 struct TopSortAlgorithm<DFSTopSort>
 {
-  public:
+public:
     /**
      * @param circuit -- topology of circuit, which gates must be sorted
      * in topological order.
@@ -175,10 +172,7 @@ struct TopSortAlgorithm<DFSTopSort>
         GateIdContainer sources{};
         for (GateId gateId = 0; gateId < circuit.getNumberOfGates(); ++gateId)
         {
-            if (circuit.getGateUsers(gateId).empty())
-            {
-                sources.push_back(gateId);
-            }
+            if (circuit.getGateUsers(gateId).empty()) { sources.push_back(gateId); }
         }
 
         GateIdContainer gateSorting{};
@@ -202,4 +196,4 @@ struct TopSortAlgorithm<DFSTopSort>
 
 }  // namespace cirbo::algo
 
-#endif // CIRBO_SEARCH_CORE_ALGO_HPP
+#endif  // CIRBO_SEARCH_CORE_ALGO_HPP

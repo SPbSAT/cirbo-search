@@ -9,13 +9,13 @@
 #include <string_view>
 #include <type_traits>
 
-#include "core/types.hpp"
-#include "io/parsers/ibench_parser.hpp"
 #include "core/structures/gate_info.hpp"
 #include "core/structures/icircuit.hpp"
 #include "core/structures/icircuit_builder.hpp"
-#include "utils/cast.hpp"
+#include "core/types.hpp"
+#include "io/parsers/ibench_parser.hpp"
 #include "logger.hpp"
+#include "utils/cast.hpp"
 
 /**
  * Parser from `CircuitSAT.BENCH` file.
@@ -35,13 +35,13 @@ class BenchToCircuit : public virtual IBenchParser, public virtual ICircuitBuild
         std::is_base_of<ICircuit, CircuitT>::value,
         "CircuitT template parameter must be a class, derived from ICircuit.");
 
-  protected:
+protected:
     /* List of output gates. */
     GateIdContainer _output_gate_ids;
     /* Vector of gate info. */
     GateInfoContainer _gate_info_vector;
 
-  public:
+public:
     BenchToCircuit()           = default;
     ~BenchToCircuit() override = default;
 
@@ -64,7 +64,7 @@ class BenchToCircuit : public virtual IBenchParser, public virtual ICircuitBuild
         return std::make_unique<CircuitT>(_gate_info_vector, _output_gate_ids);
     };
 
-  protected:
+protected:
     /**
      * Circuit input handler.
      * @param gateId -- name of processed variable.
@@ -105,14 +105,8 @@ class BenchToCircuit : public virtual IBenchParser, public virtual ICircuitBuild
         // Note that `op` and `operands_str` spaces are already trimmed.
         if (op == "CONST")
         {
-            if (operands_str == "0")
-            {
-                _addGate(gateId, GateType::CONST_FALSE, {});
-            }
-            else if (operands_str == "1")
-            {
-                _addGate(gateId, GateType::CONST_TRUE, {});
-            }
+            if (operands_str == "0") { _addGate(gateId, GateType::CONST_FALSE, {}); }
+            else if (operands_str == "1") { _addGate(gateId, GateType::CONST_TRUE, {}); }
             else
             {
                 std::cerr << "Unsupported special operator CONST with operands\"" << operands_str << "\"" << std::endl;
@@ -136,10 +130,7 @@ class BenchToCircuit : public virtual IBenchParser, public virtual ICircuitBuild
     {
         assert(type != GateType::UNDEFINED);
 
-        if (_gate_info_vector.size() <= gateId)
-        {
-            _gate_info_vector.resize(gateId + 1);
-        }
+        if (_gate_info_vector.size() <= gateId) { _gate_info_vector.resize(gateId + 1); }
         _gate_info_vector[gateId] = {type, operands};
     };
 };

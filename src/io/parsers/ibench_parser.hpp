@@ -24,7 +24,7 @@ namespace cirbo::io::parsers
  */
 class IBenchParser : public virtual ICircuitParser
 {
-  public:
+public:
     ~IBenchParser() override = default;
 
     /**
@@ -35,10 +35,7 @@ class IBenchParser : public virtual ICircuitParser
     {
         log::debug("Started parsing of BENCH stream.");
         std::string line;
-        while (std::getline(stream, line))
-        {
-            parseBenchLine_(line);
-        }
+        while (std::getline(stream, line)) { parseBenchLine_(line); }
         _eof();
         log::debug("Ended parsing of BENCH stream.");
     }
@@ -55,15 +52,12 @@ class IBenchParser : public virtual ICircuitParser
         return encoder;
     }
 
-  protected:
+protected:
     /**
      * Encode circuit variable.
      * @param var_name -- name of encoded variable.
      */
-    virtual GateId encodeGate(std::string_view var_name)
-    {
-        return encoder.encodeGate(var_name);
-    };
+    virtual GateId encodeGate(std::string_view var_name) { return encoder.encodeGate(var_name); };
 
     /**
      * Circuit input handler.
@@ -146,10 +140,7 @@ class IBenchParser : public virtual ICircuitParser
             operands_str = line.substr(l_bkt_idx + 1, r_bkt_idx - l_bkt_idx - 1);
             string_utils::trimSpaces(&operands_str);
         }
-        else
-        {
-            operands_str = line.substr(0, 0);
-        }
+        else { operands_str = line.substr(0, 0); }
 
         GateId const gateId = encodeGate(var_name);
 
@@ -201,10 +192,7 @@ class IBenchParser : public virtual ICircuitParser
             encoder.encodeGate(var_name),
             "\";\n",
             "\tOperands:\n");
-        for (auto const& x : var_operands)
-        {
-            log::debug("\t\"", x, "\".");
-        }
+        for (auto const& x : var_operands) { log::debug("\t\"", x, "\"."); }
 #endif
 
         handleGate(op, gateId, var_operands);
