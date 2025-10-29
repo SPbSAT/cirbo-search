@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CIRBO_SEARCH_CORE_OPERATORS_HPP
+#define CIRBO_SEARCH_CORE_OPERATORS_HPP
 
 #include <cassert>
 #include <cstddef>
@@ -6,7 +7,8 @@
 #include <functional>
 #include <vector>
 
-#include "core/logic.hpp"
+#include "core/types.hpp"
+#include "utils/optimize.hpp"
 
 /** Namespace contains functions that evaluate different Operators. **/
 namespace cirbo::op
@@ -23,10 +25,10 @@ namespace cirbo::op
  */
 using Operator = GateState (*)(GateState, GateState, GateState);
 
-inline GateState
+CIRBO_OPT_FORCE_INLINE GateState
 NOT(GateState a, GateState /*unused*/ = GateState::UNDEFINED, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber]{
         GateState::TRUE,       // GateState::FALSE
         GateState::FALSE,      // GateState::TRUE
         GateState::UNDEFINED,  // GateState::UNDEFINED
@@ -34,9 +36,9 @@ NOT(GateState a, GateState /*unused*/ = GateState::UNDEFINED, GateState /*unused
     return table_[static_cast<uint8_t>(a)];
 }
 
-inline GateState AND(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
+CIRBO_OPT_FORCE_INLINE GateState AND(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber * GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber * GateStateNumber]{
         GateState::FALSE,
         GateState::FALSE,
         GateState::FALSE,  // GateState::FALSE
@@ -50,9 +52,9 @@ inline GateState AND(GateState a, GateState b, GateState /*unused*/ = GateState:
     return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
-inline GateState OR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
+CIRBO_OPT_FORCE_INLINE GateState OR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber * GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber * GateStateNumber]{
         GateState::FALSE,
         GateState::TRUE,
         GateState::UNDEFINED,  // GateState::FALSE
@@ -66,9 +68,9 @@ inline GateState OR(GateState a, GateState b, GateState /*unused*/ = GateState::
     return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
-inline GateState XOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
+CIRBO_OPT_FORCE_INLINE GateState XOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber * GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber * GateStateNumber]{
         GateState::FALSE,
         GateState::TRUE,
         GateState::UNDEFINED,  // GateState::FALSE
@@ -82,9 +84,9 @@ inline GateState XOR(GateState a, GateState b, GateState /*unused*/ = GateState:
     return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
-inline GateState NAND(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
+CIRBO_OPT_FORCE_INLINE GateState NAND(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber * GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber * GateStateNumber]{
         GateState::TRUE,
         GateState::TRUE,
         GateState::TRUE,  // GateState::FALSE
@@ -98,9 +100,9 @@ inline GateState NAND(GateState a, GateState b, GateState /*unused*/ = GateState
     return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
-inline GateState NOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
+CIRBO_OPT_FORCE_INLINE GateState NOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber * GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber * GateStateNumber]{
         GateState::TRUE,
         GateState::FALSE,
         GateState::UNDEFINED,  // GateState::FALSE
@@ -114,9 +116,9 @@ inline GateState NOR(GateState a, GateState b, GateState /*unused*/ = GateState:
     return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
-inline GateState NXOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
+CIRBO_OPT_FORCE_INLINE GateState NXOR(GateState a, GateState b, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber * GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber * GateStateNumber]{
         GateState::TRUE,
         GateState::FALSE,
         GateState::UNDEFINED,  // GateState::FALSE
@@ -130,10 +132,10 @@ inline GateState NXOR(GateState a, GateState b, GateState /*unused*/ = GateState
     return table_[(static_cast<uint8_t>(a) * GateStateNumber) + static_cast<uint8_t>(b)];
 }
 
-inline GateState
+CIRBO_OPT_FORCE_INLINE GateState
 IFF(GateState a, GateState /*unused*/ = GateState::UNDEFINED, GateState /*unused*/ = GateState::UNDEFINED) noexcept
 {
-    static GateState const table_[GateStateNumber]{
+    static constexpr GateState table_[GateStateNumber]{
         GateState::FALSE,      // GateState::FALSE
         GateState::TRUE,       // GateState::TRUE
         GateState::UNDEFINED,  // GateState::UNDEFINED
@@ -141,7 +143,7 @@ IFF(GateState a, GateState /*unused*/ = GateState::UNDEFINED, GateState /*unused
     return table_[static_cast<uint8_t>(a)];
 }
 
-inline GateState MUX(GateState x, GateState y, GateState z) noexcept
+CIRBO_OPT_FORCE_INLINE GateState MUX(GateState x, GateState y, GateState z) noexcept
 {
     constexpr size_t TABLE_SIZE_X = 9;
     static constexpr GateState table_[3 * GateStateNumber * GateStateNumber]{
@@ -181,7 +183,7 @@ inline GateState MUX(GateState x, GateState y, GateState z) noexcept
          static_cast<uint8_t>(z)];
 }
 
-inline GateState CONST_FALSE(
+CIRBO_OPT_FORCE_INLINE GateState CONST_FALSE(
     GateState /*unused*/ = GateState::UNDEFINED,
     GateState /*unused*/ = GateState::UNDEFINED,
     GateState /*unused*/ = GateState::UNDEFINED) noexcept
@@ -189,7 +191,7 @@ inline GateState CONST_FALSE(
     return GateState::FALSE;
 }
 
-inline GateState CONST_TRUE(
+CIRBO_OPT_FORCE_INLINE GateState CONST_TRUE(
     GateState /*unused*/ = GateState::UNDEFINED,
     GateState /*unused*/ = GateState::UNDEFINED,
     GateState /*unused*/ = GateState::UNDEFINED) noexcept
@@ -200,12 +202,12 @@ inline GateState CONST_TRUE(
 /**
  * @return: binary operator reference by GateType value.
  */
-inline Operator getOperator(GateType type) noexcept
+CIRBO_OPT_FORCE_INLINE Operator getOperator(GateType const type) noexcept
 {
     assert(type != GateType::INPUT);
     assert(type != GateType::BUFF);
     assert(type != GateType::UNDEFINED);
-    // Must be changed if csat::GateType is changed
+    // Must be changed if cirbo::GateType is changed
     static constexpr Operator operators_[SupportedOperatorNumber]{
         &NOT, &AND, &NAND, &OR, &NOR, &XOR, &NXOR, &IFF, &MUX, &CONST_FALSE, &CONST_TRUE};
     return operators_[getIndexByOperator(type)];
@@ -230,7 +232,8 @@ namespace impl
  * Must be used only for binary operators.
  */
 template<class T, GateState TerminalState = GateState::UNDEFINED>
-inline GateState FoldMapOperator_(Operator oper, ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState
+FoldMapOperator_(Operator oper, ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Can't foldMap container with less then 2 elements.");
     GateState state = oper(mapper(container.at(0)), mapper(container.at(1)), GateState::UNDEFINED);
@@ -238,10 +241,7 @@ inline GateState FoldMapOperator_(Operator oper, ContainerT<T> const& container,
     {
         if constexpr (TerminalState != GateState::UNDEFINED)
         {
-            if (state == TerminalState)
-            {
-                return state;
-            }
+            if (state == TerminalState) { return state; }
         }
         state = oper(state, mapper(*it), GateState::UNDEFINED);
     }
@@ -251,63 +251,63 @@ inline GateState FoldMapOperator_(Operator oper, ContainerT<T> const& container,
 }  // namespace impl
 
 template<class T>
-inline GateState NOT(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState NOT(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() == 1) && "Wrong number of arguments for NOT.");
     return NOT(mapper(container.at(0)));
 }
 
 template<class T>
-inline GateState AND(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState AND(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for AND.");
     return impl::FoldMapOperator_<T, GateState::FALSE>(&AND, container, mapper);
 }
 
 template<class T>
-inline GateState OR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState OR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for OR.");
     return impl::FoldMapOperator_<T, GateState::TRUE>(&OR, container, mapper);
 }
 
 template<class T>
-inline GateState XOR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState XOR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for XOR.");
     return impl::FoldMapOperator_<T>(&XOR, container, mapper);
 }
 
 template<class T>
-inline GateState NAND(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState NAND(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for NAND.");
     return NOT(AND(container, mapper));
 }
 
 template<class T>
-inline GateState NOR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState NOR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for NOR.");
     return NOT(OR(container, mapper));
 }
 
 template<class T>
-inline GateState NXOR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState NXOR(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() >= 2) && "Wrong number of arguments for NXOR.");
     return NOT(XOR(container, mapper));
 }
 
 template<class T>
-inline GateState MUX(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState MUX(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() == 3) && "Wrong number of arguments for MUX.");
     return MUX(mapper(container.at(0)), mapper(container.at(1)), mapper(container.at(2)));
 }
 
 template<class T>
-inline GateState IFF(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
+CIRBO_OPT_FORCE_INLINE GateState IFF(ContainerT<T> const& container, MapFunction<T> mapper) noexcept
 {
     assert((container.size() == 1) && "Wrong number of arguments for IFF.");
     return IFF(mapper(container.at(0)));
@@ -335,12 +335,12 @@ constexpr GateState CONST_TRUE(
  * @return (ContainerT<T>, MapFunction<T>) argument operator reference by GateType value.
  */
 template<class T>
-inline OperatorNT<T> getOperatorNT(GateType type) noexcept
+CIRBO_OPT_FORCE_INLINE OperatorNT<T> getOperatorNT(GateType type) noexcept
 {
     assert(type != GateType::INPUT);
     assert(type != GateType::BUFF);
     assert(type != GateType::UNDEFINED);
-    // Must be changed if csat::GateType is changed
+    // Must be changed if cirbo::GateType is changed
     static OperatorNT<T> operators_[SupportedOperatorNumber]{
         &NOT<T>,
         &AND<T>,
@@ -357,3 +357,5 @@ inline OperatorNT<T> getOperatorNT(GateType type) noexcept
 }
 
 }  // namespace cirbo::op
+
+#endif  // CIRBO_SEARCH_CORE_OPERATORS_HPP

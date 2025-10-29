@@ -41,6 +41,7 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CIRBO_SEARCH_BUILD_APP": "ON",
         "CIRBO_SEARCH_BUILD_TESTS": "ON",
+        "CIRBO_ENABLE_DEBUG_LOGGING": "ON",
 
         "CIRBO_SEARCH_APP_DEBUG": "ON",
         "CIRBO_SEARCH_APP_SANITIZE": "ON",
