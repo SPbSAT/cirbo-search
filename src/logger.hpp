@@ -117,12 +117,25 @@ public:
     }
 
 private:
-    static CIRBO_OPT_FORCE_INLINE std::string _getCurrentTime()
+    static CIRBO_OPT_FORCE_INLINE std::string _getCurrentTime(const char* fmt = "%Y-%m-%d %H:%M:%S")
     {
-        auto cur_time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        // asctime result is always 25 char, with last char '\n'
-        return std::string(std::asctime(std::localtime(&cur_time))).substr(0, 24);
+        using clock = std::chrono::system_clock;
+        const auto now = clock::now();
+        const std::time_t t = clock::to_time_t(now);
+
+        std::tm tm{};
+        #if defined(_WIN32)
+        localtime_s(&tm, &t);   // MSVC/Windows
+        #else
+        localtime_r(&t, &tm);   // POSIX
+        #endif
+
+        constexpr size_t CURRENT_TIME_BUFFER_SIZE = 64;
+        char buf[CURRENT_TIME_BUFFER_SIZE];
+        const std::size_t n = std::strftime(buf, sizeof(buf), fmt, &tm);
+        return {buf, n};
     }
+
 };
 
 /**
