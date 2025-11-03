@@ -22,7 +22,7 @@ revert of automatic changes.
 
 To run formatters execute:
 ```sh
-clang-format -i app/**.cpp src/**.hpp tests/**.cpp
+clang-format app/**.cpp --header-filter='^'"$PWD"'/.*' -p build/ --config-file=.clang-tidy
 ```
 
 Note that other source files can be included similarly.
