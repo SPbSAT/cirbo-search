@@ -61,7 +61,7 @@ public:
         }
 
         log::debug("Top sort");
-        cirbo::GateIdContainer gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
+        GateIdContainer const gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
 
         log::debug("Rebuild schema");
         GateInfoContainer gate_info(circuit->getNumberOfGates());

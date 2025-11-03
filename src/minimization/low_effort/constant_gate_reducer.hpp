@@ -63,7 +63,7 @@ public:
             {GateType::NXOR, GateType::XOR }
         };
 
-        cirbo::GateIdContainer gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
+        GateIdContainer const gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
 
         size_t circuit_size = circuit->getNumberOfGates();
         GateInfoContainer gate_info(circuit_size);

@@ -99,7 +99,7 @@ public:
                     formatOperandsString_(circuit->getGateOperands(gateId), gate_id_to_auxiliary_id).str());
 
                 GateIdContainer masked_operands_{};
-                for (GateId operand : circuit->getGateOperands(gateId))
+                for (GateId const operand : circuit->getGateOperands(gateId))
                 {
                     masked_operands_.push_back(gate_id_to_auxiliary_id.at(operand));
                 }

@@ -39,11 +39,14 @@ public:
 
 static std::string getUniqueId_()
 {
+    constexpr int MIN_INT = 100'999'999;
+    constexpr int MAX_INT = 999'999'999;
+
     // Currently not the best way of random number generation
     // is presented, but it should be enough since number of
     // transformers applied to a circuit is relatively low.
     static auto engine(utils::getNewMersenneTwisterEngine());
-    static std::uniform_int_distribution<> dist(100'000'000, 999'999'999);
+    static std::uniform_int_distribution<> dist(MIN_INT, MAX_INT);
 
     return std::to_string(dist(engine));
 }

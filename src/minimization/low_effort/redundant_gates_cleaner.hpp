@@ -75,7 +75,7 @@ public:
             if (new_encoder.keyExists(gate_name))
             {
                 GateIdContainer encoded_operands_{};
-                for (GateId operand : circuit->getGateOperands(gateId))
+                for (GateId const operand : circuit->getGateOperands(gateId))
                 {
                     // All operands must be visited, since current gate was visited.
                     assert(

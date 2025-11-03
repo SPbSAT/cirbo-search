@@ -63,7 +63,7 @@ public:
 
         auto new_gate_name_prefix = (getUniqueId_() + "::new_gate_DuplicateOperandsCleaner@");
 
-        cirbo::GateIdContainer gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
+        GateIdContainer const gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
 
         size_t circuit_size = circuit->getNumberOfGates();
         GateInfoContainer gate_info(circuit_size);

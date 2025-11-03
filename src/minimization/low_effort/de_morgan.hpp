@@ -48,7 +48,7 @@ public:
         auto new_gate_name_prefix = (getUniqueId_() + "::new_gate_de_Morgan@");
 
         log::debug("Top sort");
-        cirbo::GateIdContainer gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
+        GateIdContainer const gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
 
         log::debug("Rebuild schema");
         GateIdContainer indexes_of_not(circuit->getNumberOfGates(), SIZE_MAX);
