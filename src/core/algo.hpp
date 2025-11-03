@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <functional>
+#include <iostream>
 
 #include "core/structures/dag.hpp"
 #include "core/types.hpp"
@@ -16,7 +17,7 @@
 namespace cirbo::algo
 {
 
-enum class DFSState : uint8_t
+enum class DFSState : uint8_t  // NOLINT
 {
     UNVISITED,
     ENTERED,

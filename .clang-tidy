@@ -10,6 +10,8 @@ Checks: >
   bugprone-*,
   readability-*,
   performance-*,
+#  disabled due to false-positive results
+  -bugprone-branch-clone,
   -bugprone-easily-swappable-parameters,
   -cppcoreguidelines-avoid-c-arrays,
   -cppcoreguidelines-pro-bounds-constant-array-index,
