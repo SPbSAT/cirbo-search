@@ -1,9 +1,9 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP
 #define CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP
 
-#include <map>
-#include <cstddef>
 #include <cassert>
+#include <cstddef>
+#include <map>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -11,8 +11,8 @@
 #include <vector>
 
 #include "core/algo.hpp"
-#include "core/types.hpp"
 #include "core/structures/gate_info.hpp"
+#include "core/types.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"
 

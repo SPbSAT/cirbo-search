@@ -1,8 +1,8 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_CONNECT_SYMMETRICAL_GATES_HPP
 #define CIRBO_SEARCH_MINIMIZATION_CONNECT_SYMMETRICAL_GATES_HPP
 
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <queue>
 #include <set>

@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "core/algo.hpp"
-#include "core/structures/icircuit.hpp"
 #include "core/structures/gate_info.hpp"
+#include "core/structures/icircuit.hpp"
 #include "core/types.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"

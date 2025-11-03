@@ -85,7 +85,7 @@ inline void printCircuit(DAG const& circuit, utils::NameEncoder const& encoder)
             std::cout << gateId << " => " << encoder.decodeGate(gateId) << " = "
                       << utils::gateTypeToString(circuit.getGateType(gateId)) << "(";
 
-            auto operands       = circuit.getGateOperands(gateId);
+            auto operands             = circuit.getGateOperands(gateId);
             size_t const num_operands = operands.size();
 
             if (num_operands == 0)
