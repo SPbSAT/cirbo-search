@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 
 #include "core/types.hpp"
 
@@ -19,9 +18,9 @@ private:
     // Order matters since `map_` keys references `gate_names_` elements.
     //
     // Maps index to gate name.
-    std::vector<std::string> gate_names_;
+    std::vector<std::string> gate_names_{};
     // Maps gate name to index.
-    std::unordered_map<std::string, GateId> map_;
+    std::unordered_map<std::string, GateId> map_{};
 
 public:
     /**

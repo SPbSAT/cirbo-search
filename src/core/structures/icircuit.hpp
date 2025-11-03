@@ -3,9 +3,11 @@
 
 #include <memory>
 #include <stack>
+#include <type_traits>
 
 #include "core/operators.hpp"
 #include "core/structures/gate_info.hpp"
+#include "core/structures/iassignment.hpp"
 #include "core/structures/vector_assignment.hpp"
 #include "core/types.hpp"
 

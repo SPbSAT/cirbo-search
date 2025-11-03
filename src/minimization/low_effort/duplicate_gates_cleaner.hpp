@@ -1,14 +1,20 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_DUPLICATE_GATES_CLEANER_HPP
 #define CIRBO_SEARCH_MINIMIZATION_DUPLICATE_GATES_CLEANER_HPP
 
+#include <algorithm>
+#include <cstdint>
+#include <iterator>
 #include <memory>
-#include <ranges>
 #include <sstream>
+#include <string>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
 
 #include "core/algo.hpp"
+#include "core/structures/icircuit.hpp"
+#include "core/types.hpp"
+#include "core/structures/gate_info.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"
 #include "utils/cast.hpp"
@@ -174,7 +180,7 @@ private:
         }
 
         // Adds names of gate's operands to its auxiliary name.
-        for (GateId operand : prepared_operands) { auxiliary_name << '_' + std::to_string(operand); }
+        for (GateId const operand : prepared_operands) { auxiliary_name << '_' + std::to_string(operand); }
 
         return auxiliary_name.str();
     };

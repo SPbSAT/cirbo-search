@@ -1,8 +1,6 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_STRATEGY_HPP
 #define CIRBO_SEARCH_MINIMIZATION_STRATEGY_HPP
 
-#include <type_traits>
-
 #include "core/structures/dag.hpp"
 #include "core/structures/icircuit.hpp"
 #include "minimization/composition.hpp"

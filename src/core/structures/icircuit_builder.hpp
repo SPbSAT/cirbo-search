@@ -2,6 +2,7 @@
 #define CIRBO_SEARCH_ICIRCUIT_BUILDER_HPP
 
 #include <memory>
+#include <type_traits>
 
 #include "core/structures/icircuit.hpp"
 

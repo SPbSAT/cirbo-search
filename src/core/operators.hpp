@@ -2,10 +2,6 @@
 #define CIRBO_SEARCH_CORE_OPERATORS_HPP
 
 #include <cassert>
-#include <cstddef>
-#include <cstdint>
-#include <functional>
-#include <vector>
 
 #include "core/types.hpp"
 #include "utils/optimize.hpp"

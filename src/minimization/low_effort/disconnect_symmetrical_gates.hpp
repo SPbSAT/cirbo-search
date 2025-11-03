@@ -2,15 +2,18 @@
 #define CIRBO_SEARCH_MINIMIZATION_DISCONNECT_SYMMETRICAL_GATES_HPP
 
 #include <memory>
+#include <ranges>
 #include <set>
+#include <string>
 #include <type_traits>
 #include <vector>
 
 #include "core/algo.hpp"
+#include "core/structures/icircuit.hpp"
+#include "core/structures/gate_info.hpp"
 #include "core/types.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"
-#include "utils/cast.hpp"
 
 namespace cirbo::minimization
 {
@@ -63,9 +66,8 @@ public:
         log::debug("Rebuild schema");
         GateInfoContainer gate_info(circuit->getNumberOfGates());
 
-        for (auto it = gate_sorting.rbegin(); it != gate_sorting.rend(); ++it)
+        for (auto gateId : std::ranges::reverse_view(gate_sorting))
         {
-            GateId gateId                   = *it;
             GateIdContainer const& operands = circuit->getGateOperands(gateId);
             if ((operands.size() > arity) && (validParams.find(circuit->getGateType(gateId)) != validParams.end()))
             {
@@ -77,7 +79,7 @@ public:
 
                     if (new_operands_.size() == arity)
                     {
-                        GateId new_gateID =
+                        GateId const new_gateID =
                             encoder->encodeGate("new_gate_disconnect_gates" + std::to_string((*encoder).size()));
                         gate_info.emplace_back(circuit->getGateType(gateId), new_operands_);
 

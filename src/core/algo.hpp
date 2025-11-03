@@ -2,10 +2,8 @@
 #define CIRBO_SEARCH_CORE_ALGO_HPP
 
 #include <algorithm>
+#include <cstddef>
 #include <functional>
-#include <iostream>
-#include <stack>
-#include <vector>
 
 #include "core/structures/dag.hpp"
 #include "core/types.hpp"

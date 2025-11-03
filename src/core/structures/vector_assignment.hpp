@@ -1,6 +1,8 @@
 #ifndef CIRBO_SEARCH_VECTOR_ASSIGNMENT_HPP
 #define CIRBO_SEARCH_VECTOR_ASSIGNMENT_HPP
 
+#include <cstddef>
+#include <algorithm>
 #include <vector>
 
 #include "core/structures/iassignment.hpp"

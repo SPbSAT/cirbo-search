@@ -2,7 +2,6 @@
 #define CIRBO_SEARCH_GATE_INFO_HPP
 
 #include <algorithm>
-#include <memory>
 #include <utility>
 #include <vector>
 

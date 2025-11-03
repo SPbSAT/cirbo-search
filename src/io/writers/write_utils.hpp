@@ -5,7 +5,6 @@
 #include <fstream>
 #include <iostream>
 #include <ostream>
-#include <string>
 #include <type_traits>
 
 #include "core/structures/dag.hpp"
@@ -87,7 +86,7 @@ inline void printCircuit(DAG const& circuit, utils::NameEncoder const& encoder)
                       << utils::gateTypeToString(circuit.getGateType(gateId)) << "(";
 
             auto operands       = circuit.getGateOperands(gateId);
-            size_t num_operands = operands.size();
+            size_t const num_operands = operands.size();
 
             if (num_operands == 0)
             {

@@ -3,9 +3,6 @@
 
 #include <iostream>
 
-#include "core/types.hpp"
-#include "utils/encoder.hpp"
-
 /**
  * Parser that process stream of lines defining some boolean circuit and return a `RawCircuit` structure.
  */

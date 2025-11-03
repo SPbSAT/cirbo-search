@@ -2,10 +2,11 @@
 #define CIRBO_SEARCH_DAG_HPP
 
 #include <algorithm>
-#include <memory>
+#include <cstddef>
 #include <utility>
 #include <vector>
 
+#include "core/structures/gate_info.hpp"
 #include "core/structures/icircuit.hpp"
 #include "core/types.hpp"
 
@@ -116,8 +117,7 @@ protected:
 
 public:
     DAG(DAG const& dag)
-        : ICircuit()
-        , gates_(dag.gates_)
+        : gates_(dag.gates_)
         , input_gates_(dag.input_gates_)
         , output_gates_(dag.output_gates_)
     {

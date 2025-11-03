@@ -60,7 +60,6 @@ class LoggerImpl
 public:
     std::string name;
 
-public:
     LoggerImpl() noexcept
         : name("Logger")
     {

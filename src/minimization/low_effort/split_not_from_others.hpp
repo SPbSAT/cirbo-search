@@ -1,13 +1,18 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP
 #define CIRBO_SEARCH_MINIMIZATION_SPLIT_NOT_FROM_OTHERS_HPP
 
-#include <algorithm>
+#include <map>
+#include <cstddef>
+#include <cassert>
 #include <memory>
 #include <ranges>
-#include <type_traits>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "core/algo.hpp"
+#include "core/types.hpp"
+#include "core/structures/gate_info.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"
 
@@ -57,7 +62,7 @@ public:
                 // Например: User'ы NAND теперь будут указывать на NOT(AND).
 
                 // Инвертированный гейт получает новый id.
-                GateId new_gate_id =
+                GateId const new_gate_id =
                     encoder->encodeGate("new_gate_split_not_with_others@" + std::to_string(circuit_size));
                 gate_info.emplace_back(
                     inverse_type.at(circuit->getGateType(gateId)),

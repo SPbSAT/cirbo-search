@@ -1,16 +1,18 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_DE_MORGAN_HPP
 #define CIRBO_SEARCH_MINIMIZATION_DE_MORGAN_HPP
 
+#include <map>
+#include <cstdint>
 #include <memory>
-#include <optional>
+#include <string>
 #include <type_traits>
-#include <vector>
 
 #include "core/algo.hpp"
+#include "core/structures/icircuit.hpp"
+#include "core/structures/gate_info.hpp"
 #include "core/types.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"
-#include "utils/cast.hpp"
 
 namespace cirbo::minimization
 {
@@ -168,7 +170,7 @@ private:
         return SIZE_MAX;
     }
 
-    inline GateIdContainer get_new_operands_(
+    GateIdContainer get_new_operands_(
         CircuitT const& circuit,
         GateInfoContainer& gate_info,
         NameEncoder& encoder,
@@ -183,7 +185,7 @@ private:
             GateId index_of_not = find_index_of_not_(circuit, indexes_of_not, operand);
             if (index_of_not == SIZE_MAX)
             {
-                GateId new_gateId = encoder.encodeGate(new_gate_name_prefix + std::to_string(encoder.size()));
+                GateId const new_gateId = encoder.encodeGate(new_gate_name_prefix + std::to_string(encoder.size()));
                 gate_info.resize(new_gateId + 1);
                 indexes_of_not.at(operand) = new_gateId;
                 new_operands.push_back(new_gateId);

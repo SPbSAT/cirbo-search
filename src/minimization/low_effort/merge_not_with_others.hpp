@@ -3,10 +3,13 @@
 
 #include <map>
 #include <memory>
-#include <type_traits>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "core/algo.hpp"
+#include "core/types.hpp"
+#include "core/structures/gate_info.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"
 

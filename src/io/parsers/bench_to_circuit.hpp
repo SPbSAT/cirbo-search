@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <ostream>
+#include <string>
 #include <string_view>
 #include <type_traits>
 
@@ -48,7 +49,7 @@ public:
     /**
      * Clears internal state of a parser.
      */
-    void clear()
+    void clear() override
     {
         encoder.clear();
         _output_gate_ids.clear();

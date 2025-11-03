@@ -1,18 +1,22 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_CONNECT_SYMMETRICAL_GATES_HPP
 #define CIRBO_SEARCH_MINIMIZATION_CONNECT_SYMMETRICAL_GATES_HPP
 
+#include <cstdint>
+#include <cstddef>
 #include <memory>
 #include <queue>
 #include <set>
-#include <type_traits>
+#include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "core/algo.hpp"
+#include "core/structures/gate_info.hpp"
 #include "core/types.hpp"
 #include "logger.hpp"
 #include "minimization/transformer_base.hpp"
-#include "utils/cast.hpp"
+#include "utils/optimize.hpp"
 
 namespace cirbo::minimization::impl
 {
