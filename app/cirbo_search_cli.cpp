@@ -1,5 +1,4 @@
 #include <CLI/CLI.hpp>
-#include <chrono>
 #include <cstdlib>
 #include <exception>
 #include <fstream>

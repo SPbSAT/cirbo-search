@@ -19,8 +19,8 @@
 namespace cirbo::io::parsers
 {
 
-constexpr std::string INPUT_STRING = "INPUT";
-constexpr std::string OUTPUT_STRING = "OUTPUT";
+constexpr std::string_view INPUT_STRING  = "INPUT";
+constexpr std::string_view OUTPUT_STRING = "OUTPUT";
 
 /**
  * Base class for CircuitSAT.BENCH parsers.
@@ -105,7 +105,8 @@ protected:
         if (line.starts_with(INPUT_STRING))
         {
             log::debug("\tReceived input gate line.");
-            std::string_view var_name = line.substr(INPUT_STRING.length() + 1, line.find(')') - INPUT_STRING.length() - 1);
+            std::string_view var_name =
+                line.substr(INPUT_STRING.length() + 1, line.find(')') - INPUT_STRING.length() - 1);
             string_utils::trimSpaces(&var_name);
 
             log::debug("\tEncoding input gate: \"", var_name, "\".");
@@ -117,7 +118,8 @@ protected:
         if (line.starts_with(OUTPUT_STRING))
         {
             log::debug("\tReceived output gate line.");
-            std::string_view var_name = line.substr(OUTPUT_STRING.length() + 1, line.find(')') - OUTPUT_STRING.length() - 1);
+            std::string_view var_name =
+                line.substr(OUTPUT_STRING.length() + 1, line.find(')') - OUTPUT_STRING.length() - 1);
             string_utils::trimSpaces(&var_name);
 
             log::debug("\tEncoding output gate: \"", var_name, "\".");

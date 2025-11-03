@@ -99,7 +99,7 @@ public:
                     int64_t states_count[GateStateNumber]{0 /*False*/, 0 /*True*/, 0 /*Undefined*/};
                     for (auto operand : circuit->getGateOperands(gate_id))
                     {
-                        operand            = getLink_(operand, old_to_new_gateId);
+                        operand                  = getLink_(operand, old_to_new_gateId);
                         GateState const op_state = result_assignment->getGateState(operand);
                         ++states_count[static_cast<uint8_t>(op_state)];
 

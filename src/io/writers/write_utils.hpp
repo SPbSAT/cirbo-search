@@ -32,7 +32,10 @@ void writeBenchFile(CircuitT const& circuit, utils::NameEncoder const& encoder, 
     file_out << "\n";
 
     log::debug("recording OUTPUTs.");
-    for (GateId const output : circuit.getOutputGates()) { file_out << "OUTPUT(" << encoder.decodeGate(output) << ")\n"; }
+    for (GateId const output : circuit.getOutputGates())
+    {
+        file_out << "OUTPUT(" << encoder.decodeGate(output) << ")\n";
+    }
     file_out << "\n";
 
     log::debug("recording Gates.");
@@ -43,7 +46,7 @@ void writeBenchFile(CircuitT const& circuit, utils::NameEncoder const& encoder, 
             file_out << encoder.decodeGate(gateId) << " = " << utils::gateTypeToString(circuit.getGateType(gateId))
                      << "(";
 
-            auto operands       = circuit.getGateOperands(gateId);
+            auto operands             = circuit.getGateOperands(gateId);
             size_t const num_operands = operands.size();
 
             if (num_operands == 0)

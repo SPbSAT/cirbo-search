@@ -145,10 +145,7 @@ static CIRBO_OPT_FORCE_INLINE LoggerImpl& getGlobalLogger()
     return instance;
 }
 
-static CIRBO_OPT_FORCE_INLINE void setGlobalLoggerName(std::string const& name)
-{
-    getGlobalLogger().setName(name);
-}
+static CIRBO_OPT_FORCE_INLINE void setGlobalLoggerName(std::string const& name) { getGlobalLogger().setName(name); }
 
 template<class... Args>
 CIRBO_OPT_FORCE_INLINE void debug(Args const&... args)
