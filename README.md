@@ -3,7 +3,7 @@ Library for boolean circuit synthesis and minimization.
 
 ## (DEV) Setup environment
 
-1. Install dev dependencies: `clang-tidy, clang-formatter`
+1. Install dev dependencies: `build-essential`, `cmake`, `clang-tidy`, `clang-formatter`
 1. Update submodules `git submodule update --init --recursive`.
 2. Open project in IDE (e.g. `CLion`).
 3. CMake profiles set in `CMakeProfiles.json` (for `CLion` one needs to enable them in profile setup section of settings)
@@ -13,11 +13,35 @@ For `DEBUG` profile:
   -DCMAKE_BUILD_TYPE=DEBUG -DCIRBO_SEARCH_BUILD_TESTS=1 -DCIRBO_SEARCH_APP_DEBUG=1 -DCIRBO_SEARCH_APP_SANITIZE=1
   ```
 
+## (DEV) Tools
+
+Note: remember to commit current changes before any formatting/auto-fixing is performed.
+Such changes may time-to-time break original code due to imperfectness of C++ tooling.
+To commit right after formatting/auto-fixing is also a good practice since it eases
+revert of automatic changes.
+
+To run formatters execute:
+```sh
+clang-format app/**.cpp --header-filter='^'"$PWD"'/.*' -p build/ --config-file=.clang-tidy
+```
+
+Note that other source files can be included similarly.
+
+To run linters execute:
+```sh
+clang-tidy ./src/**.hpp -p build/debug/ --config-file=.clang-tidy
+```
+
+Note that one should build project before `clang-tidy` can be executed
+since it requires build artifacts to work properly.
+
+To run `clang-tidy` in auto-fix mode add flag `--fix-errors` to command.
+
 ## Project Structure
 
 Sources:
 - `app/` contains source files for executables, which use main library.
-- `src/` contains source files organized as header-only library.
+- `` contains source files organized as header-only library.
 - `third_party/` contains source files for third-party libraries.
 
 Data:
@@ -30,7 +54,7 @@ Auxiliary:
 
 ### Library Structure
 
-Directory `src/` contains main source files of library and is organized as follows:
+Directory `` contains main source files of library and is organized as follows:
 - `core/` defines core types and structures:
   - `algorithms/` defines general algorithms for graphs and boolean circuits specifically.
   - `structure/` defines core (data) structs used in the library.

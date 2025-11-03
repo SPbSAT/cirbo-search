@@ -1,0 +1,150 @@
+#ifndef CIRBO_SEARCH_PARSER_BENCH_TO_CIRCUIT_HPP
+#define CIRBO_SEARCH_PARSER_BENCH_TO_CIRCUIT_HPP
+
+#include <cassert>
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <type_traits>
+
+#include "core/structures/gate_info.hpp"
+#include "core/structures/icircuit.hpp"
+#include "core/structures/icircuit_builder.hpp"
+#include "core/types.hpp"
+#include "io/parsers/ibench_parser.hpp"
+#include "logger.hpp"
+#include "utils/cast.hpp"
+
+/**
+ * Parser from `CircuitSAT.BENCH` file.
+ */
+namespace cirbo::io::parsers
+{
+
+/**
+ * CircuitSAT.BENCH parser.
+ * @tparam CircuitT -- data structure that will
+ * be returned by member-function `instantiate`.
+ */
+template<class CircuitT>
+class BenchToCircuit : public virtual IBenchParser, public virtual ICircuitBuilder<CircuitT>
+{
+    static_assert(
+        std::is_base_of<ICircuit, CircuitT>::value,
+        "CircuitT template parameter must be a class, derived from ICircuit.");
+
+protected:
+    /* List of output gates. */
+    GateIdContainer _output_gate_ids;
+    /* Vector of gate info. */
+    GateInfoContainer _gate_info_vector;
+
+public:
+    BenchToCircuit()           = default;
+    ~BenchToCircuit() override = default;
+
+    /**
+     * Clears internal state of a parser.
+     */
+    void clear() override
+    {
+        encoder.clear();
+        _output_gate_ids.clear();
+        _gate_info_vector.clear();
+    }
+
+    /**
+     * Instantiates d CircuitT.
+     * @return Circuit instance, built according to current parser info.
+     */
+    std::unique_ptr<CircuitT> instantiate() final
+    {
+        return std::make_unique<CircuitT>(_gate_info_vector, _output_gate_ids);
+    };
+
+protected:
+    /**
+     * Circuit input handler.
+     * @param gateId -- name of processed variable.
+     */
+    void handleInput(GateId gateId) final
+    {
+        log::debug("\tEncoded name: \"", gateId, "\".");
+        _addGate(gateId, GateType::INPUT, {});
+    };
+
+    /**
+     * Circuit output handler.
+     * @param gateId -- name of processed variable.
+     */
+    void handleOutput(GateId gateId) final
+    {
+        log::debug("\tEncoded name: \"", gateId, "\".");
+        _output_gate_ids.push_back(gateId);
+    };
+
+    /**
+     * Circuit gate handler.
+     * @param op -- operation.
+     * @param gateId -- gate.
+     * @param var_operands -- operands of gate.
+     */
+    void handleGate(std::string_view op, GateId gateId, GateIdContainer const& var_operands) final
+    {
+        auto op_type = cirbo::utils::stringToGateType(std::string(op));
+        _addGate(gateId, op_type, var_operands);
+    };
+
+    bool specialOperatorCallback_(GateId gateId, std::string_view op, std::string_view operands_str) final
+    {
+        // Specific gate, which is found in some benchmarks.
+        // It has no operands, but contains a value (0 or 1).
+        //
+        // Note that `op` and `operands_str` spaces are already trimmed.
+        if (op == "CONST")
+        {
+            if (operands_str == "0")
+            {
+                _addGate(gateId, GateType::CONST_FALSE, {});
+            }
+            else if (operands_str == "1")
+            {
+                _addGate(gateId, GateType::CONST_TRUE, {});
+            }
+            else
+            {
+                std::cerr << "Unsupported special operator CONST with operands\"" << operands_str << "\"" << std::endl;
+                std::abort();
+            }
+            return true;
+        }
+        else if (op == "vdd")
+        {
+            // Another specific gate is `vdd`, which is formed by ABC and is always equal to true
+            _addGate(gateId, GateType::CONST_TRUE, {});
+            return true;
+        }
+
+        // `op` is not a special operator.
+        return false;
+    };
+
+    /* Adds Gate info to parser internal state. */
+    void _addGate(GateId gateId, GateType type, GateIdContainer const& operands) noexcept
+    {
+        assert(type != GateType::UNDEFINED);
+
+        if (_gate_info_vector.size() <= gateId)
+        {
+            _gate_info_vector.resize(gateId + 1);
+        }
+        _gate_info_vector[gateId] = {type, operands};
+    };
+};
+
+}  // namespace cirbo::io::parsers
+
+#endif  // CIRBO_SEARCH_PARSER_BENCH_TO_CIRCUIT_HPP

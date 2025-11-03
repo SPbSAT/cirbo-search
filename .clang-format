@@ -5,16 +5,17 @@ ColumnLimit: 120
 ---
 Language: Cpp
 BreakBeforeBraces: Allman
-AccessModifierOffset: 0
+AccessModifierOffset: -4
 AlignArrayOfStructures: Left
-DerivePointerAlignment: false
 AlignOperands: AlignAfterOperator
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: Consecutive
-AllowShortBlocksOnASingleLine: Never
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: Always
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: false
 BinPackArguments: false
 BinPackParameters: false
+DerivePointerAlignment: false
 PointerAlignment: Left
 ReferenceAlignment: Left
 QualifierAlignment: Right
@@ -28,3 +29,5 @@ AlwaysBreakTemplateDeclarations: Yes
 ReflowComments: true
 BreakConstructorInitializers: BeforeComma
 SpaceBeforeCpp11BracedList: false
+IndentPPDirectives: BeforeHash
+InsertBraces: true
