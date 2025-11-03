@@ -109,7 +109,10 @@ public:
                         // of type OR. So we will not consider it. As for XOR and NXOR, we simply skip operands with the
                         // value FALSE. And we count the number of operands with the value TRUE, then it will be
                         // necessary to change the gate type to the opposite.
-                        if (op_state == GateState::UNDEFINED) { operands.push_back(operand); }
+                        if (op_state == GateState::UNDEFINED)
+                        {
+                            operands.push_back(operand);
+                        }
                     }
 
                     // Change the gate to the opposite.
@@ -240,7 +243,10 @@ private:
      */
     GateId getLink_(GateId gate_id, std::vector<GateId> const& old_to_new_gateId)
     {
-        if (old_to_new_gateId.at(gate_id) != SIZE_MAX) { return old_to_new_gateId.at(gate_id); }
+        if (old_to_new_gateId.at(gate_id) != SIZE_MAX)
+        {
+            return old_to_new_gateId.at(gate_id);
+        }
         return gate_id;
     }
 
@@ -289,8 +295,14 @@ private:
         gate_info.emplace_back(GateType::NOT, GateIdContainer{left});
 
         encoder.encodeGate(getNewGateName_(new_gate_name_prefix, output));
-        if (gate_state == GateState::TRUE) { gate_info.emplace_back(GateType::OR, GateIdContainer{left, right}); }
-        else { gate_info.emplace_back(GateType::AND, GateIdContainer{left, right}); }
+        if (gate_state == GateState::TRUE)
+        {
+            gate_info.emplace_back(GateType::OR, GateIdContainer{left, right});
+        }
+        else
+        {
+            gate_info.emplace_back(GateType::AND, GateIdContainer{left, right});
+        }
 
         // Add recently build output to vector of new output gates.
         new_output_gates.push_back(output);

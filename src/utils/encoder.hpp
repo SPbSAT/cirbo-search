@@ -31,7 +31,10 @@ public:
      */
     GateId encodeGate(std::string&& name)
     {
-        if (auto const it = map_.find(name); it != map_.end()) { return it->second; }
+        if (auto const it = map_.find(name); it != map_.end())
+        {
+            return it->second;
+        }
 
         auto const id = static_cast<GateId>(gate_names_.size());
         gate_names_.push_back(std::move(name));

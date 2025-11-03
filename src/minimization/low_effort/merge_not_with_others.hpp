@@ -52,7 +52,10 @@ public:
         {
             // Mask is necessary because we can change prepare
             // some gates before their iteration comes.
-            if (visited.at(gateId)) { continue; }
+            if (visited.at(gateId))
+            {
+                continue;
+            }
             visited.at(gateId) = true;
 
             if (circuit->getGateType(gateId) == GateType::NOT &&

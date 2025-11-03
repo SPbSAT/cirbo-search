@@ -12,6 +12,7 @@ AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: Consecutive
 AllowShortBlocksOnASingleLine: Always
 AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: false
 BinPackArguments: false
 BinPackParameters: false
 DerivePointerAlignment: false
@@ -29,3 +30,4 @@ ReflowComments: true
 BreakConstructorInitializers: BeforeComma
 SpaceBeforeCpp11BracedList: false
 IndentPPDirectives: BeforeHash
+InsertBraces: true

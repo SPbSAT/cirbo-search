@@ -88,7 +88,10 @@ DFSStateVector performDepthFirstSearch(
 
     auto enqueue_next = [&dfs_state, &queue_](GateId nextGateId) -> void
     {
-        if (dfs_state[nextGateId] == DFSState::UNVISITED) { queue_.push(nextGateId); }
+        if (dfs_state[nextGateId] == DFSState::UNVISITED)
+        {
+            queue_.push(nextGateId);
+        }
     };
 
     for (auto start : startGates)
@@ -172,7 +175,10 @@ public:
         GateIdContainer sources{};
         for (GateId gateId = 0; gateId < circuit.getNumberOfGates(); ++gateId)
         {
-            if (circuit.getGateUsers(gateId).empty()) { sources.push_back(gateId); }
+            if (circuit.getGateUsers(gateId).empty())
+            {
+                sources.push_back(gateId);
+            }
         }
 
         GateIdContainer gateSorting{};

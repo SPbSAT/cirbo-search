@@ -105,8 +105,14 @@ protected:
         // Note that `op` and `operands_str` spaces are already trimmed.
         if (op == "CONST")
         {
-            if (operands_str == "0") { _addGate(gateId, GateType::CONST_FALSE, {}); }
-            else if (operands_str == "1") { _addGate(gateId, GateType::CONST_TRUE, {}); }
+            if (operands_str == "0")
+            {
+                _addGate(gateId, GateType::CONST_FALSE, {});
+            }
+            else if (operands_str == "1")
+            {
+                _addGate(gateId, GateType::CONST_TRUE, {});
+            }
             else
             {
                 std::cerr << "Unsupported special operator CONST with operands\"" << operands_str << "\"" << std::endl;
@@ -130,7 +136,10 @@ protected:
     {
         assert(type != GateType::UNDEFINED);
 
-        if (_gate_info_vector.size() <= gateId) { _gate_info_vector.resize(gateId + 1); }
+        if (_gate_info_vector.size() <= gateId)
+        {
+            _gate_info_vector.resize(gateId + 1);
+        }
         _gate_info_vector[gateId] = {type, operands};
     };
 };

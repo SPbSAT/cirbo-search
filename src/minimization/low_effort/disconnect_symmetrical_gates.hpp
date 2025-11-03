@@ -44,9 +44,18 @@ public:
         log::debug("=========================================================================================");
         log::debug("START DisconnectSymmetricalGates");
 
-        if constexpr (EnableAND) validParams.insert(GateType::AND);
-        if constexpr (EnableOR) validParams.insert(GateType::OR);
-        if constexpr (EnableXOR) validParams.insert(GateType::XOR);
+        if constexpr (EnableAND)
+        {
+            validParams.insert(GateType::AND);
+        }
+        if constexpr (EnableOR)
+        {
+            validParams.insert(GateType::OR);
+        }
+        if constexpr (EnableXOR)
+        {
+            validParams.insert(GateType::XOR);
+        }
 
         log::debug("Top sort");
         cirbo::GateIdContainer gate_sorting(algo::TopSortAlgorithm<algo::DFSTopSort>::sorting(*circuit));
@@ -79,7 +88,10 @@ public:
                 new_operands_.push_back(operands.at(operandId));
                 gate_info.at(gateId) = {circuit->getGateType(gateId), new_operands_};
             }
-            else { gate_info.at(gateId) = {circuit->getGateType(gateId), operands}; }
+            else
+            {
+                gate_info.at(gateId) = {circuit->getGateType(gateId), operands};
+            }
         }
 
         log::debug("END DisconnectSymmetricalGates");

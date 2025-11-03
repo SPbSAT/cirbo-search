@@ -60,7 +60,10 @@ public:
                 {
                     new_operands_.push_back(get_operand(*circuit, operands));
                 }
-                else { new_operands_.push_back(operands); }
+                else
+                {
+                    new_operands_.push_back(operands);
+                }
             }
             gate_info.at(gateId) = {circuit->getGateType(gateId), new_operands_};
         }
@@ -94,8 +97,14 @@ private:
             check_gate = circuit.getGateOperands(gateId).at(0);
         }
 
-        if (flag) { return check_gate; }
-        else { return gateId; }
+        if (flag)
+        {
+            return check_gate;
+        }
+        else
+        {
+            return gateId;
+        }
     }
 };
 

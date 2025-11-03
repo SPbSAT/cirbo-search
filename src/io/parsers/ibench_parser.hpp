@@ -140,7 +140,10 @@ protected:
             operands_str = line.substr(l_bkt_idx + 1, r_bkt_idx - l_bkt_idx - 1);
             string_utils::trimSpaces(&operands_str);
         }
-        else { operands_str = line.substr(0, 0); }
+        else
+        {
+            operands_str = line.substr(0, 0);
+        }
 
         GateId const gateId = encodeGate(var_name);
 

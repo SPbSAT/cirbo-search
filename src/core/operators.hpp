@@ -241,7 +241,10 @@ FoldMapOperator_(Operator oper, ContainerT<T> const& container, MapFunction<T> m
     {
         if constexpr (TerminalState != GateState::UNDEFINED)
         {
-            if (state == TerminalState) { return state; }
+            if (state == TerminalState)
+            {
+                return state;
+            }
         }
         state = oper(state, mapper(*it), GateState::UNDEFINED);
     }

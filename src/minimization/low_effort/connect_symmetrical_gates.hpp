@@ -47,12 +47,21 @@ public:
         log::debug("START ConnectSymmetricalGates");
 
         static std::set<GateType> validConnectTypes{};
-        if constexpr (EnableAND) validConnectTypes.insert(GateType::AND);
-        if constexpr (EnableOR) validConnectTypes.insert(GateType::OR);
-        if constexpr (EnableXOR) validConnectTypes.insert(GateType::XOR);
+        if constexpr (EnableAND)
+        {
+            validConnectTypes.insert(GateType::AND);
+        }
+        if constexpr (EnableOR)
+        {
+            validConnectTypes.insert(GateType::OR);
+        }
+        if constexpr (EnableXOR)
+        {
+            validConnectTypes.insert(GateType::XOR);
+        }
 
         GateInfoContainer gate_info(circuit->getNumberOfGates());
-        cirbo::BoolVector visit_mask(circuit->getNumberOfGates(), false);
+        BoolVector visit_mask(circuit->getNumberOfGates(), false);
         std::vector<impl::VisitCounter> visit_counters(circuit->getNumberOfGates());
 
         // From outputs to inputs.
@@ -60,7 +69,10 @@ public:
         {
             // Mask is needed because some gates can be decided
             // to be unnecessary before their iteration comes.
-            if (visit_mask.at(gateId)) { continue; }
+            if (visit_mask.at(gateId))
+            {
+                continue;
+            }
             visit_mask.at(gateId) = true;
 
             if (validConnectTypes.find(circuit->getGateType(gateId)) != validConnectTypes.end())
@@ -68,7 +80,10 @@ public:
                 gate_info.at(gateId) = {
                     circuit->getGateType(gateId), buildNewOperands_(*circuit, visit_mask, visit_counters, gateId)};
             }
-            else { gate_info.at(gateId) = {circuit->getGateType(gateId), circuit->getGateOperands(gateId)}; }
+            else
+            {
+                gate_info.at(gateId) = {circuit->getGateType(gateId), circuit->getGateOperands(gateId)};
+            }
         }
 
         log::debug("END ConnectSymmetricalGates");
@@ -77,9 +92,9 @@ public:
     };
 
 private:
-    inline GateIdContainer buildNewOperands_(
+    CIRBO_OPT_FORCE_INLINE GateIdContainer buildNewOperands_(
         CircuitT const& circuit,
-        cirbo::BoolVector& visit_mask,
+        BoolVector& visit_mask,
         std::vector<impl::VisitCounter>& visit_counters,
         GateId iteration_gate)
     {
@@ -132,7 +147,10 @@ private:
                         // We need to take each occurence in XOR since XOR evaluated oddity.
                         for (size_t i = 0; i < number_of_takes[curr_gate]; ++i) { new_operands_.push_back(operandId); }
                     }
-                    else { new_operands_.push_back(operandId); }
+                    else
+                    {
+                        new_operands_.push_back(operandId);
+                    }
                 }
                 else
                 {

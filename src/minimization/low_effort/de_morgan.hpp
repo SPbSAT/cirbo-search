@@ -93,7 +93,10 @@ public:
                     // если хотябы один User гейта не использует его отрицание, то необходимо перевесить гейты, то есть
                     // измениь тип текущего гейта на NOT. Все User'ы использующие правило де Моргана будут ссылаться на
                     // OR/AND/XOR, остальные на NOT(OR/AND/XOR)
-                    if (count_branches[gateId] != circuit->getGateUsers(gateId).size()) { rehang = true; }
+                    if (count_branches[gateId] != circuit->getGateUsers(gateId).size())
+                    {
+                        rehang = true;
+                    }
                 }
                 else
                 {
@@ -108,7 +111,10 @@ public:
                     gate_info.at(gateId) = {GateType::NOT, GateIdContainer{indexes_of_not.at(gateId)}};
                     rehang               = false;
                 }
-                else { gate_info.at(gateId) = {circuit->getGateType(gateId), operands}; }
+                else
+                {
+                    gate_info.at(gateId) = {circuit->getGateType(gateId), operands};
+                }
             }
             else if (
                 circuit->getGateType(gateId) == GateType::NOT &&
@@ -147,11 +153,17 @@ private:
         // NOT у гейта будет всегда только один, так как перед алгоритмом DeMorgan_ применяется DuplicatesCleaner,
         // а во время его работы создается фиктивный гейт NOT только после проверки, что реального нет
 
-        if (indexes_of_not.at(gateId) != SIZE_MAX) { return indexes_of_not.at(gateId); }
+        if (indexes_of_not.at(gateId) != SIZE_MAX)
+        {
+            return indexes_of_not.at(gateId);
+        }
 
         for (GateId user : circuit.getGateUsers(gateId))
         {
-            if (circuit.getGateType(user) == GateType::NOT) { return user; }
+            if (circuit.getGateType(user) == GateType::NOT)
+            {
+                return user;
+            }
         }
         return SIZE_MAX;
     }
@@ -176,7 +188,10 @@ private:
                 indexes_of_not.at(operand) = new_gateId;
                 new_operands.push_back(new_gateId);
             }
-            else { new_operands.push_back(index_of_not); }
+            else
+            {
+                new_operands.push_back(index_of_not);
+            }
             // запишем что один из пользователей operand требует NOT(operand)
             count_branches[operand] += 1;
         }

@@ -134,8 +134,14 @@ public:
                 {
                     // If, as a result of counting of the operands, an empty map is obtained
                     // (it can be in gates of type XOR or NXOR), then we know their assignment.
-                    if (gate_type == GateType::XOR) { old_to_new_gateId.at(gate_id) = id_const_false; }
-                    else { old_to_new_gateId.at(gate_id) = id_const_true; }
+                    if (gate_type == GateType::XOR)
+                    {
+                        old_to_new_gateId.at(gate_id) = id_const_false;
+                    }
+                    else
+                    {
+                        old_to_new_gateId.at(gate_id) = id_const_true;
+                    }
                 }
                 else
                 {
@@ -209,8 +215,14 @@ public:
                 }
                 else if (operands.empty())
                 {
-                    if (gate_type == GateType::XOR) { old_to_new_gateId.at(gate_id) = id_const_false; }
-                    else { old_to_new_gateId.at(gate_id) = id_const_true; }
+                    if (gate_type == GateType::XOR)
+                    {
+                        old_to_new_gateId.at(gate_id) = id_const_false;
+                    }
+                    else
+                    {
+                        old_to_new_gateId.at(gate_id) = id_const_true;
+                    }
                 }
                 // If the gate is left with 2+ operands, then it is considered syntactically correct
                 // and nothing more needs to be done with it and its users.
@@ -286,7 +298,10 @@ private:
             {
                 //  For gates like XOR and NXOR we want to remove duplicates modulo two.
                 value %= 2;
-                if (value == 0) { delete_key.push_back(key); }
+                if (value == 0)
+                {
+                    delete_key.push_back(key);
+                }
             }
         }
         else if (
@@ -315,7 +330,10 @@ private:
      */
     GateId getLink_(GateId gate_id, std::vector<GateId> const& old_to_new_gateId)
     {
-        if (old_to_new_gateId.at(gate_id) != SIZE_MAX) { return old_to_new_gateId.at(gate_id); }
+        if (old_to_new_gateId.at(gate_id) != SIZE_MAX)
+        {
+            return old_to_new_gateId.at(gate_id);
+        }
         return gate_id;
     }
 
@@ -377,7 +395,10 @@ private:
         }
 
         // If the number of pairs of opposite operands was odd, then add one auxiliary gate of the CONST_TRUE type.
-        if (number_of_pair % 2 == 1) { operands.push_back(id_const_true); }
+        if (number_of_pair % 2 == 1)
+        {
+            operands.push_back(id_const_true);
+        }
 
         return operands;
     }

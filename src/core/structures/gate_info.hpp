@@ -33,14 +33,20 @@ public:
         : type_(type)
         , operands_(operands)
     {
-        if (utils::symmetricOperatorQ(type)) { std::ranges::sort(operands_); }
+        if (utils::symmetricOperatorQ(type))
+        {
+            std::ranges::sort(operands_);
+        }
     }
 
     GateInfo(GateType const type, GateIdContainer&& operands)
         : type_(type)
         , operands_(std::move(operands))
     {
-        if (utils::symmetricOperatorQ(type)) { std::ranges::sort(operands_); }
+        if (utils::symmetricOperatorQ(type))
+        {
+            std::ranges::sort(operands_);
+        }
     }
 
     [[nodiscard]]

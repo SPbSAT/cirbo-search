@@ -184,7 +184,10 @@ private:
         std::unordered_map<GateId, GateId> const& encoder)
     {
         std::stringstream ss;
-        if (operands.empty()) { return ss; }
+        if (operands.empty())
+        {
+            return ss;
+        }
 
         ss << encoder.at(operands[0]);
         for (auto ptr = operands.begin() + 1; ptr != operands.end(); ++ptr) { ss << ',' << encoder.at(*ptr); }

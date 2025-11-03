@@ -152,7 +152,10 @@ private:
         {
             gates_.emplace_back(gateId, gate_info[gateId].getType(), gate_info[gateId].getOperands());
 
-            if (gate_info[gateId].getType() == GateType::INPUT) { input_gates_.push_back(gateId); }
+            if (gate_info[gateId].getType() == GateType::INPUT)
+            {
+                input_gates_.push_back(gateId);
+            }
         }
     }
 
@@ -163,7 +166,10 @@ private:
         {
             gates_.emplace_back(gateId, gate_info[gateId].getType(), gate_info[gateId].moveOperands());
 
-            if (gate_info[gateId].getType() == GateType::INPUT) { input_gates_.push_back(gateId); }
+            if (gate_info[gateId].getType() == GateType::INPUT)
+            {
+                input_gates_.push_back(gateId);
+            }
         }
     }
 

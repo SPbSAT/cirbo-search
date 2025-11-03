@@ -39,14 +39,20 @@ public:
 
     void assign(GateId const gateId, GateState const state) override
     {
-        if constexpr (DynamicResize) { ensureCapacity(gateId); }
+        if constexpr (DynamicResize)
+        {
+            ensureCapacity(gateId);
+        }
         gate_states_.at(gateId) = state;
     }
 
     [[nodiscard]]
     GateState getGateState(GateId const gateId) const override
     {
-        if (containsValueFor_(gateId)) { return gate_states_.at(gateId); }
+        if (containsValueFor_(gateId))
+        {
+            return gate_states_.at(gateId);
+        }
 
         return GateState::UNDEFINED;
     }
