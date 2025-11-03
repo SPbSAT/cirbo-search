@@ -1,18 +1,20 @@
 #include <CLI/CLI.hpp>
 #include <chrono>
+#include <cstdlib>
 #include <exception>
+#include <fstream>
 #include <iostream>
+#include <memory>
 #include <string>
+#include <tuple>
 
-#include "core/algo.hpp"
-#include "core/operators.hpp"
-#include "core/types.hpp"
+#include "core/structures/dag.hpp"
 #include "io/parsers/bench_to_circuit.hpp"
-#include "io/parsers/ibench_parser.hpp"
 #include "io/writers/write_utils.hpp"
 #include "logger.hpp"
-#include "minimization/nest.hpp"
+#include "minimization/composition.hpp"
 #include "minimization/strategy.hpp"
+#include "utils/encoder.hpp"
 
 namespace
 {

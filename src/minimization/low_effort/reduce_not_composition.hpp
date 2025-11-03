@@ -40,7 +40,7 @@ public:
      */
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
-        std::unique_ptr<NameEncoder> encoder)
+        std::unique_ptr<NameEncoder> encoder) override
     {
         log::debug("=========================================================================================");
         log::debug("START ReduceNotComposition");
@@ -51,10 +51,10 @@ public:
         log::debug("Rebuild schema");
         GateInfoContainer gate_info(circuit->getNumberOfGates());
 
-        for (GateId gateId : gate_sorting)
+        for (GateId const gateId : gate_sorting)
         {
             GateIdContainer new_operands_{};
-            for (GateId operands : circuit->getGateOperands(gateId))
+            for (GateId const operands : circuit->getGateOperands(gateId))
             {
                 // if the current operand is NOT, then we look at its operand and, if possible, reduce the number of NOT
                 if (circuit->getGateType(operands) == GateType::NOT)

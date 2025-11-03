@@ -41,7 +41,7 @@ public:
      */
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
-        std::unique_ptr<NameEncoder> encoder)
+        std::unique_ptr<NameEncoder> encoder) override
     {
         log::debug("=========================================================================================");
         log::debug("START RedundantGatesCleaner.");
@@ -95,7 +95,7 @@ public:
         // All outputs must be visited since DFS starts from them.
         GateIdContainer new_output_gates{};
         new_output_gates.reserve(circuit->getOutputGates().size());
-        for (GateId output_gate : circuit->getOutputGates())
+        for (GateId const output_gate : circuit->getOutputGates())
         {
             assert(
                 mask_use_output.at(output_gate) != algo::DFSState::UNVISITED ||

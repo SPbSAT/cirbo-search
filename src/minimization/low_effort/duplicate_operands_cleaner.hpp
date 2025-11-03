@@ -57,7 +57,7 @@ public:
      */
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
-        std::unique_ptr<NameEncoder> encoder)
+        std::unique_ptr<NameEncoder> encoder) override
     {
         log::debug("START DuplicateOperandsCleaner");
 
@@ -95,7 +95,7 @@ public:
             //      2 = NOT(1)      |   will be {1: 0}. This means that all users of gate 1 must now use
             //      OTPUT(2)        |   gate 0.
 
-            GateType gate_type = circuit->getGateType(gate_id);
+            GateType const gate_type = circuit->getGateType(gate_id);
 
             // Count the occurrence of operands in the gate.
             std::map<GateId, size_t> map_count_operands = transformOperands_(*circuit, gate_id, old_to_new_gateId);
@@ -149,7 +149,7 @@ public:
                     // If after counting there are 2+ operands left, try to find the opposite operands.
                     // If gates are found to have opposite operands, then all their users will have to use
                     // constants (CONST_TRUE, CONST_FALSE) as their operands instead of these gates.
-                    bool flag = areThereOppositeOperands_(gate_info, map_count_operands);
+                    bool const flag = areThereOppositeOperands_(gate_info, map_count_operands);
                     if (flag && (gate_type == GateType::AND || gate_type == GateType::NOR))
                     {
                         old_to_new_gateId.at(gate_id) = id_const_false;
@@ -243,7 +243,7 @@ public:
                 }
                 else
                 {
-                    for (GateId operand : circuit->getGateOperands(gate_id))
+                    for (GateId const operand : circuit->getGateOperands(gate_id))
                     {
                         operands.push_back(getLink_(operand, old_to_new_gateId));
                     }
@@ -257,7 +257,7 @@ public:
         // Rebuild OUTPUT.
         GateIdContainer new_output_gates{};
         new_output_gates.reserve(circuit->getOutputGates().size());
-        for (GateId output_gate : circuit->getOutputGates())
+        for (GateId const output_gate : circuit->getOutputGates())
         {
             new_output_gates.push_back(old_to_new_gateId.at(output_gate));
         }
@@ -283,12 +283,12 @@ private:
     std::map<GateId, size_t>
     transformOperands_(CircuitT const& circuit, GateId gate_id, std::vector<GateId> const& old_to_new_gateId)
     {
-        GateType gate_type = circuit.getGateType(gate_id);
+        GateType const gate_type = circuit.getGateType(gate_id);
         std::map<GateId, size_t> map_count_operands{};
-        for (GateId operand : circuit.getGateOperands(gate_id))
+        for (GateId const operand : circuit.getGateOperands(gate_id))
         {
             // We should count only valid links (already changed).
-            GateId check_operand = getLink_(operand, old_to_new_gateId);
+            GateId const check_operand = getLink_(operand, old_to_new_gateId);
             ++map_count_operands[check_operand];
         }
 

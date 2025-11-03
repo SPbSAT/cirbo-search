@@ -39,7 +39,7 @@ class DuplicateGatesCleaner_ : public ITransformer<CircuitT>
 public:
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
-        std::unique_ptr<NameEncoder> encoder)
+        std::unique_ptr<NameEncoder> encoder) override
     {
         log::debug("=========================================================================================");
         log::debug("START DuplicateGatesCleaner");
@@ -61,7 +61,7 @@ public:
 
         log::debug("Building mask to delete gates and filling map -- gate_id_to_auxiliary_id");
         std::string auxiliary_name;
-        for (GateId gateId : gateSorting)
+        for (GateId const gateId : gateSorting)
         {
             log::debug("Processing gate ", gateId);
             auxiliary_name.clear();
@@ -109,7 +109,7 @@ public:
 
         GateIdContainer new_output_gates{};
         new_output_gates.reserve(circuit->getOutputGates().size());
-        for (GateId output_gate : circuit->getOutputGates())
+        for (GateId const output_gate : circuit->getOutputGates())
         {
             new_output_gates.push_back(gate_id_to_auxiliary_id.at(output_gate));
         }

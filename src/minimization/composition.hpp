@@ -36,7 +36,7 @@ public:
      */
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
-        std::unique_ptr<NameEncoder> encoder)
+        std::unique_ptr<NameEncoder> encoder) override
     {
         auto _transformer         = TransformerT();
         auto [_circuit, _encoder] = _transformer.transform(std::move(circuit), std::move(encoder));
@@ -58,7 +58,7 @@ struct Composition<CircuitT, TransformerT> : public ITransformer<CircuitT>
 public:
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
-        std::unique_ptr<NameEncoder> encoder)
+        std::unique_ptr<NameEncoder> encoder) override
     {
         auto _transformer = TransformerT();
         return _transformer.transform(std::move(circuit), std::move(encoder));

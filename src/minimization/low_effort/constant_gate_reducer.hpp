@@ -52,7 +52,7 @@ public:
      */
     CircuitAndEncoder<CircuitT, std::string> transform(
         std::unique_ptr<CircuitT> circuit,
-        std::unique_ptr<NameEncoder> encoder)
+        std::unique_ptr<NameEncoder> encoder) override
     {
         log::debug("START ConstantGateReducer");
 
@@ -74,7 +74,7 @@ public:
         // Evaluate circuit.
         auto result_assignment = circuit->template evaluateCircuit<VectorAssignment<true>>(VectorAssignment<false>{});
 
-        for (GateId gate_id : std::ranges::reverse_view(gate_sorting))
+        for (GateId const gate_id : std::ranges::reverse_view(gate_sorting))
         {
             GateType gate_type = circuit->getGateType(gate_id);
             GateIdContainer operands{};
@@ -100,7 +100,7 @@ public:
                     for (auto operand : circuit->getGateOperands(gate_id))
                     {
                         operand            = getLink_(operand, old_to_new_gateId);
-                        GateState op_state = result_assignment->getGateState(operand);
+                        GateState const op_state = result_assignment->getGateState(operand);
                         ++states_count[static_cast<uint8_t>(op_state)];
 
                         // We take only unknown operands.
@@ -209,7 +209,7 @@ public:
         // replace it with a little trivial circuit-gadget.
         GateIdContainer new_output_gates{};
         new_output_gates.reserve(circuit->getOutputGates().size());
-        for (GateId output_gate : circuit->getOutputGates())
+        for (GateId const output_gate : circuit->getOutputGates())
         {
             if (result_assignment->isUndefined(output_gate))
             {
