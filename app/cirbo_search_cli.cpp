@@ -19,7 +19,7 @@
 namespace
 {
 
-using namespace cirbo;
+using namespace cirbo;  // NOLINT
 
 /**
  * Helper for file stream opening.
@@ -78,8 +78,6 @@ void minimize(std::string const& input_file, std::string const& output_file)
     log::debug(input_file, ": minimization start.");
     auto [simplified_instance, simplified_encoder] = applySimplification(csat_instance, encoder);
     log::debug(input_file, ": simplification end.");
-
-    auto timeEnd = std::chrono::steady_clock::now();
 
     writeResult(*simplified_instance, *simplified_encoder, output_file);
 }
