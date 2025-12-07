@@ -67,6 +67,9 @@ constexpr size_t FirstOperatorIdx = 1;
  */
 inline size_t getIndexByOperator(GateType gateType) { return static_cast<size_t>(gateType) - FirstOperatorIdx; }
 
+/** At i'th position carries state of gate with Id = i. **/
+using GateStateContainer = std::vector<GateState>;
+
 /** Internal gate ids are numbers 0,1,2... **/
 using GateId          = size_t;
 using GateIdContainer = std::vector<GateId>;

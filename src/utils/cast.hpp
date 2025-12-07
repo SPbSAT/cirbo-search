@@ -1,7 +1,10 @@
 #ifndef CIRBO_SEARCH_UTILS_CAST_HPP
 #define CIRBO_SEARCH_UTILS_CAST_HPP
 
+#include <functional>
+#include <map>
 #include <string>
+#include <unordered_map>
 
 #include "core/types.hpp"
 

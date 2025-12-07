@@ -4,6 +4,9 @@
 #include <cstddef>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "core/types.hpp"
 
@@ -43,6 +46,8 @@ public:
 
     GateId encodeGate(std::string_view const name) { return encodeGate(std::string(name)); }
 
+    GateId encodeGate(char const* str) { return encodeGate(std::string(str)); }
+
     [[nodiscard]]
     std::string const& decodeGate(GateId const gateId) const
     {
@@ -53,7 +58,7 @@ public:
     bool keyExists(std::string const& key) const
     {
         return map_.contains(key);
-    };
+    }
 
     [[nodiscard]]
     size_t size() const noexcept
