@@ -2,6 +2,7 @@
 #define CIRBO_SEARCH_CORE_OPERATORS_HPP
 
 #include <cassert>
+#include <functional>
 
 #include "core/types.hpp"
 #include "utils/optimize.hpp"
@@ -206,6 +207,131 @@ CIRBO_OPT_FORCE_INLINE Operator getOperator(GateType const type) noexcept
     // Must be changed if cirbo::GateType is changed
     static constexpr Operator operators_[SupportedOperatorNumber]{
         &NOT, &AND, &NAND, &OR, &NOR, &XOR, &NXOR, &IFF, &MUX, &CONST_FALSE, &CONST_TRUE};
+    return operators_[getIndexByOperator(type)];
+}
+
+/**
+ * MultipleInput versions of Operators that take a GateStateContainer as an argument.
+ */
+
+
+using OperatorN = GateState(*)(GateStateContainer const&);
+
+
+namespace impl {
+
+/**
+ * Must be used only for binary operators.
+ */
+template<GateState TerminalState=GateState::UNDEFINED>
+CIRBO_OPT_FORCE_INLINE GateState FoldOperator_(Operator oper, GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() >= 2) && "Can't fold container with less then 2 elements.");
+    GateState state = oper(gsc.at(0), gsc.at(1), GateState::UNDEFINED);
+    for(auto it = gsc.begin() + 2; it != gsc.end(); ++it)
+    {
+        if constexpr(TerminalState != GateState::UNDEFINED)
+        {
+            if (state == TerminalState)
+            {
+                return state;
+            }
+        }
+        state = oper(state, *it, GateState::UNDEFINED);
+
+    }
+    return state;
+}
+
+} // namespace impl
+
+
+CIRBO_OPT_FORCE_INLINE GateState NOT(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() == 1) && "Wrong number of arguments for NOT.");
+    return NOT(gsc.at(0));
+}
+
+CIRBO_OPT_FORCE_INLINE GateState AND(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() >= 2) && "Wrong number of arguments for AND.");
+    return impl::FoldOperator_<GateState::FALSE>(AND, gsc);
+}
+
+CIRBO_OPT_FORCE_INLINE GateState OR(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() >= 2) && "Wrong number of arguments for OR.");
+    return impl::FoldOperator_<GateState::TRUE>(&OR, gsc);
+}
+
+CIRBO_OPT_FORCE_INLINE GateState XOR(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() >= 2) && "Wrong number of arguments for XOR.");
+    return impl::FoldOperator_(&XOR, gsc);
+}
+
+CIRBO_OPT_FORCE_INLINE GateState NAND(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() >= 2) && "Wrong number of arguments for NAND.");
+    return NOT(AND(gsc));
+}
+
+CIRBO_OPT_FORCE_INLINE GateState NOR(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() >= 2) && "Wrong number of arguments for NOR.");
+    return NOT(OR(gsc));
+}
+
+CIRBO_OPT_FORCE_INLINE GateState NXOR(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() >= 2) && "Wrong number of arguments for NXOR.");
+    return NOT(XOR(gsc));
+}
+
+CIRBO_OPT_FORCE_INLINE GateState IFF(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() == 1) && "Wrong number of arguments for IFF.");
+    return IFF(gsc.at(0));
+}
+
+CIRBO_OPT_FORCE_INLINE GateState MUX(GateStateContainer const& gsc) noexcept
+{
+    assert((gsc.size() == 3) && "Wrong number of arguments for MUX.");
+    return MUX(gsc.at(0), gsc.at(1), gsc.at(2));
+}
+
+CIRBO_OPT_FORCE_INLINE GateState CONST_FALSE([[maybe_unused]] GateStateContainer const& gsc) noexcept
+{
+    assert(gsc.empty() && "Wrong number of arguments for CONST_FALSE.");
+    return GateState::FALSE;
+}
+
+CIRBO_OPT_FORCE_INLINE GateState CONST_TRUE([[maybe_unused]] GateStateContainer const& gsc) noexcept
+{
+    assert(gsc.empty() && "Wrong number of arguments for CONST_TRUE.");
+    return GateState::TRUE;
+}
+
+/**
+ * @return GateStateContainer argument operator reference by GateType value.
+ */
+CIRBO_OPT_FORCE_INLINE OperatorN getOperatorN(GateType type) noexcept
+{
+    assert(type != GateType::INPUT);
+    assert(type != GateType::BUFF);
+    assert(type != GateType::UNDEFINED);
+    // Must be changed if csat::GateType is changed
+    static OperatorN operators_[SupportedOperatorNumber]
+    {
+        &NOT,
+        &AND, &NAND,
+        &OR,  &NOR,
+        &XOR, &NXOR,
+        &IFF,
+        &MUX,
+        &CONST_FALSE,
+        &CONST_TRUE
+    };
     return operators_[getIndexByOperator(type)];
 }
 
