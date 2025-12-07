@@ -332,7 +332,6 @@ TEST_CASE("DuplicateOperandsCleaner SaveCONST", "[duplicate_operands][const]")
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
     cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    // Note: this test uses ConstantGateReducer, as in the original code.
     auto [circuit, _] =
         Composition<DAG, cirbo::minimization::ConstantGateReducer<cirbo::DAG> >().apply(*csat_instance, encoder);
 
