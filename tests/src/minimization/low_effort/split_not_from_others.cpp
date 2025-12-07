@@ -1,15 +1,13 @@
-#include "core/types.hpp"
-#include "core/structures/dag.hpp"
-#include "io/parsers/bench_to_circuit.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <memory>
+#include <sstream>
+#include <string>
 
+#include "core/structures/dag.hpp"
+#include "core/types.hpp"
+#include "io/parsers/bench_to_circuit.hpp"
 #include "minimization/composition.hpp"
 #include "minimization/strategy.hpp"
-
-#include <string>
-#include <sstream>
-#include <memory>
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace cirbo;
 using namespace cirbo::minimization;
@@ -27,12 +25,9 @@ TEST_CASE("SplitNotFromOthers ChangeOutput", "[split_not_from_others]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        SplitNotFromOthers<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, SplitNotFromOthers<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 4);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -59,22 +54,19 @@ TEST_CASE("SplitNotFromOthers DifferentOperators", "[split_not_from_others]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        SplitNotFromOthers<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, SplitNotFromOthers<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 8);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
     REQUIRE(circuit->getGateType(1) == GateType::INPUT);
     REQUIRE(circuit->getGateType(2) == GateType::NOT);
-    REQUIRE(circuit->getGateOperands(2) == GateIdContainer({7})); // XOR
+    REQUIRE(circuit->getGateOperands(2) == GateIdContainer({7}));  // XOR
     REQUIRE(circuit->getGateType(3) == GateType::NOT);
-    REQUIRE(circuit->getGateOperands(3) == GateIdContainer({5})); // AND
+    REQUIRE(circuit->getGateOperands(3) == GateIdContainer({5}));  // AND
     REQUIRE(circuit->getGateType(4) == GateType::NOT);
-    REQUIRE(circuit->getGateOperands(4) == GateIdContainer({6})); // OR
+    REQUIRE(circuit->getGateOperands(4) == GateIdContainer({6}));  // OR
     REQUIRE(circuit->getGateType(5) == GateType::AND);
     REQUIRE(circuit->getGateOperands(5) == GateIdContainer({0, 1}));
     REQUIRE(circuit->getGateType(6) == GateType::OR);
@@ -98,12 +90,9 @@ TEST_CASE("SplitNotFromOthers UnusedGates", "[split_not_from_others]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        SplitNotFromOthers<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, SplitNotFromOthers<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 6);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -136,12 +125,9 @@ TEST_CASE("SplitNotFromOthers NotBesideInput", "[split_not_from_others]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        SplitNotFromOthers<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, SplitNotFromOthers<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 8);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -175,12 +161,9 @@ TEST_CASE("SplitNotFromOthers NoChanges", "[split_not_from_others]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        SplitNotFromOthers<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, SplitNotFromOthers<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 4);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -208,12 +191,9 @@ TEST_CASE("SplitNotFromOthers SeveralOutputs", "[split_not_from_others]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        SplitNotFromOthers<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, SplitNotFromOthers<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 7);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);

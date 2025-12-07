@@ -1,13 +1,12 @@
-#include "logger.hpp"
 #include "utils/encoder.hpp"
 
+#include <catch2/catch_test_macros.hpp>
 #include <string>
 
-#include <catch2/catch_test_macros.hpp>
+#include "logger.hpp"
 
 using namespace cirbo;
 using namespace cirbo::utils;
-
 
 TEST_CASE("Encoder EncodeDecode", "[encoder]")
 {

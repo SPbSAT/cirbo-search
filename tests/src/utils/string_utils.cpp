@@ -1,9 +1,8 @@
 #include "utils/string_utils.hpp"
 
+#include <catch2/catch_test_macros.hpp>
 #include <string>
 #include <string_view>
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace cirbo;
 using namespace cirbo::string_utils;

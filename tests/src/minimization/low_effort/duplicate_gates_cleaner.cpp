@@ -1,15 +1,13 @@
-#include "core/types.hpp"
-#include "core/structures/dag.hpp"
-#include "io/parsers/bench_to_circuit.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <memory>
+#include <sstream>
+#include <string>
 
+#include "core/structures/dag.hpp"
+#include "core/types.hpp"
+#include "io/parsers/bench_to_circuit.hpp"
 #include "minimization/composition.hpp"
 #include "minimization/strategy.hpp"
-
-#include <string>
-#include <sstream>
-#include <memory>
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace cirbo;
 using namespace cirbo::minimization;
@@ -29,12 +27,9 @@ TEST_CASE("DuplicateGatesCleaner SimpleTest", "[duplicate_gates]")
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        DuplicateGatesCleaner<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, DuplicateGatesCleaner<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 4);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -61,12 +56,9 @@ TEST_CASE("DuplicateGatesCleaner NoSorted", "[duplicate_gates]")
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        DuplicateGatesCleaner<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, DuplicateGatesCleaner<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 4);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -102,12 +94,9 @@ TEST_CASE("DuplicateGatesCleaner SeveralLevels", "[duplicate_gates]")
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        DuplicateGatesCleaner<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, DuplicateGatesCleaner<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 10);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -144,12 +133,9 @@ TEST_CASE("DuplicateGatesCleaner SeveralOutput", "[duplicate_gates]")
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        DuplicateGatesCleaner<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, DuplicateGatesCleaner<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 3);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -184,12 +170,9 @@ TEST_CASE("DuplicateGatesCleaner SeveralLevelsMUX", "[duplicate_gates]")
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        DuplicateGatesCleaner<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, DuplicateGatesCleaner<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 11);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -232,12 +215,9 @@ TEST_CASE("DuplicateGatesCleaner ReducibleDuplicateOfOperands", "[duplicate_gate
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        DuplicateGatesCleaner<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, DuplicateGatesCleaner<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 5);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -269,12 +249,9 @@ TEST_CASE("DuplicateGatesCleaner XorNotReducible", "[duplicate_gates]")
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        DuplicateGatesCleaner<DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, DuplicateGatesCleaner<DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 6);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);

@@ -1,15 +1,13 @@
-#include "core/types.hpp"
-#include "core/structures/dag.hpp"
-#include "io/parsers/bench_to_circuit.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <memory>
+#include <sstream>
+#include <string>
 
+#include "core/structures/dag.hpp"
+#include "core/types.hpp"
+#include "io/parsers/bench_to_circuit.hpp"
 #include "minimization/composition.hpp"
 #include "minimization/strategy.hpp"
-
-#include <string>
-#include <sstream>
-#include <memory>
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace cirbo;
 using namespace cirbo::minimization;
@@ -32,12 +30,10 @@ TEST_CASE("ConnectSymmetricalGates SimpleTest", "[connect_symmetrical]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        ConnectSymmetricalGates<DAG, true, true, true>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] =
+        Composition<DAG, ConnectSymmetricalGates<DAG, true, true, true> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 5);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -67,12 +63,10 @@ TEST_CASE("ConnectSymmetricalGates Cycle", "[connect_symmetrical]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        ConnectSymmetricalGates<DAG, true, true, true>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] =
+        Composition<DAG, ConnectSymmetricalGates<DAG, true, true, true> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 5);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -109,12 +103,10 @@ TEST_CASE("ConnectSymmetricalGates UseMiddleGates", "[connect_symmetrical]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        ConnectSymmetricalGates<DAG, true, true, true>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] =
+        Composition<DAG, ConnectSymmetricalGates<DAG, true, true, true> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 9);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -147,12 +139,10 @@ TEST_CASE("ConnectSymmetricalGates NoChanges", "[connect_symmetrical]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        ConnectSymmetricalGates<DAG, true, true, true>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] =
+        Composition<DAG, ConnectSymmetricalGates<DAG, true, true, true> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 5);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -186,12 +176,10 @@ TEST_CASE("ConnectSymmetricalGates SeveralOutputs", "[connect_symmetrical]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        ConnectSymmetricalGates<DAG, true, true, true>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] =
+        Composition<DAG, ConnectSymmetricalGates<DAG, true, true, true> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 6);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -223,12 +211,10 @@ TEST_CASE("ConnectSymmetricalGates NewGatesMUX", "[connect_symmetrical]")
     parser.parseStream(stream);
 
     std::unique_ptr<DAG> csat_instance = parser.instantiate();
-    utils::NameEncoder encoder = parser.getEncoder();
+    utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        ConnectSymmetricalGates<DAG, true, true, true>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] =
+        Composition<DAG, ConnectSymmetricalGates<DAG, true, true, true> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 7);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);

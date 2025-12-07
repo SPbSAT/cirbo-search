@@ -1,37 +1,33 @@
-#include "core/types.hpp"
-#include "core/structures/dag.hpp"
-#include "io/parsers/bench_to_circuit.hpp"
+#include <catch2/catch_test_macros.hpp>
+#include <memory>
+#include <sstream>
+#include <string>
 
+#include "core/structures/dag.hpp"
+#include "core/types.hpp"
+#include "io/parsers/bench_to_circuit.hpp"
 #include "minimization/composition.hpp"
 #include "minimization/strategy.hpp"
-
-#include <string>
-#include <sstream>
-#include <memory>
-
-#include <catch2/catch_test_macros.hpp>
 
 using namespace cirbo;
 using namespace cirbo::minimization;
 
 TEST_CASE("DeMorgan SimpleTest", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "OUTPUT(2)\n"
-                            "2 = NOR(0, 1)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "OUTPUT(2)\n"
+        "2 = NOR(0, 1)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 5);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -47,24 +43,22 @@ TEST_CASE("DeMorgan SimpleTest", "[demorgan]")
 
 TEST_CASE("DeMorgan Rehang", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "OUTPUT(4)\n"
-                            "2 = NOR(0, 1)\n"
-                            "3 = NAND(0, 2)\n"
-                            "4 = NAND(2, 3)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "OUTPUT(4)\n"
+        "2 = NOR(0, 1)\n"
+        "3 = NAND(0, 2)\n"
+        "4 = NAND(2, 3)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 6);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -82,24 +76,22 @@ TEST_CASE("DeMorgan Rehang", "[demorgan]")
 
 TEST_CASE("DeMorgan UseCurrentNot", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "OUTPUT(4)\n"
-                            "2 = NOT(0)\n"
-                            "3 = NOR(0, 1)\n"
-                            "4 = AND(2, 3)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "OUTPUT(4)\n"
+        "2 = NOT(0)\n"
+        "3 = NOR(0, 1)\n"
+        "4 = AND(2, 3)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 6);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -117,26 +109,24 @@ TEST_CASE("DeMorgan UseCurrentNot", "[demorgan]")
 
 TEST_CASE("DeMorgan NotComposition", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "INPUT(2)\n"
-                            "OUTPUT(6)\n"
-                            "3 = OR(0, 1)\n"
-                            "4 = NOT(3)\n"
-                            "5 = OR(2, 3)\n"
-                            "6 = NAND(4, 5)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "INPUT(2)\n"
+        "OUTPUT(6)\n"
+        "3 = OR(0, 1)\n"
+        "4 = NOT(3)\n"
+        "5 = OR(2, 3)\n"
+        "6 = NAND(4, 5)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 8);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -157,26 +147,24 @@ TEST_CASE("DeMorgan NotComposition", "[demorgan]")
 
 TEST_CASE("DeMorgan DontMergeNot1", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "INPUT(2)\n"
-                            "OUTPUT(6)\n"
-                            "3 = OR(0, 1)\n"
-                            "4 = NOT(3)\n"
-                            "5 = OR(2, 3)\n"
-                            "6 = AND(4, 5)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "INPUT(2)\n"
+        "OUTPUT(6)\n"
+        "3 = OR(0, 1)\n"
+        "4 = NOT(3)\n"
+        "5 = OR(2, 3)\n"
+        "6 = AND(4, 5)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 7);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -195,26 +183,24 @@ TEST_CASE("DeMorgan DontMergeNot1", "[demorgan]")
 
 TEST_CASE("DeMorgan DontMergeNot2", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "INPUT(2)\n"
-                            "OUTPUT(6)\n"
-                            "3 = OR(0, 1)\n"
-                            "4 = NOT(3)\n"
-                            "5 = NOR(2, 3)\n"
-                            "6 = AND(4, 5)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "INPUT(2)\n"
+        "OUTPUT(6)\n"
+        "3 = OR(0, 1)\n"
+        "4 = NOT(3)\n"
+        "5 = NOR(2, 3)\n"
+        "6 = AND(4, 5)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 8);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -235,26 +221,24 @@ TEST_CASE("DeMorgan DontMergeNot2", "[demorgan]")
 
 TEST_CASE("DeMorgan LongChain", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "INPUT(2)\n"
-                            "INPUT(3)\n"
-                            "OUTPUT(6)\n"
-                            "4 = NOR(0, 1)\n"
-                            "5 = AND(2, 4)\n"
-                            "6 = NOR(3, 5)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "INPUT(2)\n"
+        "INPUT(3)\n"
+        "OUTPUT(6)\n"
+        "4 = NOR(0, 1)\n"
+        "5 = AND(2, 4)\n"
+        "6 = NOR(3, 5)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 9);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -276,32 +260,30 @@ TEST_CASE("DeMorgan LongChain", "[demorgan]")
 
 TEST_CASE("DeMorgan Cycle1", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "INPUT(2)\n"
-                            "INPUT(3)\n"
-                            "INPUT(4)\n"
-                            "INPUT(5)\n"
-                            "OUTPUT(12)\n"
-                            "6 = AND(0, 1)\n"
-                            "7 = AND(2, 6)\n"
-                            "8 = AND(3, 6)\n"
-                            "9 = OR(4, 5)\n"
-                            "10 = NOR(8, 9)\n"
-                            "11 = NAND(7, 8)\n"
-                            "12 = AND(10, 11)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "INPUT(2)\n"
+        "INPUT(3)\n"
+        "INPUT(4)\n"
+        "INPUT(5)\n"
+        "OUTPUT(12)\n"
+        "6 = AND(0, 1)\n"
+        "7 = AND(2, 6)\n"
+        "8 = AND(3, 6)\n"
+        "9 = OR(4, 5)\n"
+        "10 = NOR(8, 9)\n"
+        "11 = NAND(7, 8)\n"
+        "12 = AND(10, 11)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 19);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -341,32 +323,30 @@ TEST_CASE("DeMorgan Cycle1", "[demorgan]")
 
 TEST_CASE("DeMorgan CycleplusSeveralOutputs", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "INPUT(2)\n"
-                            "INPUT(3)\n"
-                            "INPUT(4)\n"
-                            "INPUT(5)\n"
-                            "OUTPUT(10)\n"
-                            "OUTPUT(11)\n"
-                            "6 = AND(0, 1)\n"
-                            "7 = AND(2, 6)\n"
-                            "8 = AND(3, 6)\n"
-                            "9 = OR(4, 5)\n"
-                            "10 = OR(8, 9)\n"
-                            "11 = NAND(7, 8)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "INPUT(2)\n"
+        "INPUT(3)\n"
+        "INPUT(4)\n"
+        "INPUT(5)\n"
+        "OUTPUT(10)\n"
+        "OUTPUT(11)\n"
+        "6 = AND(0, 1)\n"
+        "7 = AND(2, 6)\n"
+        "8 = AND(3, 6)\n"
+        "9 = OR(4, 5)\n"
+        "10 = OR(8, 9)\n"
+        "11 = NAND(7, 8)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 15);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
@@ -398,36 +378,34 @@ TEST_CASE("DeMorgan CycleplusSeveralOutputs", "[demorgan]")
 
 TEST_CASE("DeMorgan StopDeMorgan", "[demorgan]")
 {
-    std::string const dag = "INPUT(0)\n"
-                            "INPUT(1)\n"
-                            "INPUT(2)\n"
-                            "INPUT(3)\n"
-                            "INPUT(4)\n"
-                            "INPUT(5)\n"
-                            "OUTPUT(12)\n"
-                            "OUTPUT(13)\n"
-                            "6 = AND(0, 1)\n"
-                            "7 = AND(2, 6)\n"
-                            "8 = AND(3, 6)\n"
-                            "9 = OR(4, 5)\n"
-                            "10 = NOR(8, 9)\n"
-                            "11 = NAND(7, 8)\n"
-                            "12 = AND(10, 11)\n"
-                            "13 = MUX(8, 14, 15)\n"
-                            "14 = CONST(0)\n"
-                            "15 = CONST(1)\n";
+    std::string const dag =
+        "INPUT(0)\n"
+        "INPUT(1)\n"
+        "INPUT(2)\n"
+        "INPUT(3)\n"
+        "INPUT(4)\n"
+        "INPUT(5)\n"
+        "OUTPUT(12)\n"
+        "OUTPUT(13)\n"
+        "6 = AND(0, 1)\n"
+        "7 = AND(2, 6)\n"
+        "8 = AND(3, 6)\n"
+        "9 = OR(4, 5)\n"
+        "10 = NOR(8, 9)\n"
+        "11 = NAND(7, 8)\n"
+        "12 = AND(10, 11)\n"
+        "13 = MUX(8, 14, 15)\n"
+        "14 = CONST(0)\n"
+        "15 = CONST(1)\n";
 
     std::istringstream stream(dag);
     cirbo::io::parsers::BenchToCircuit<cirbo::DAG> parser;
     parser.parseStream(stream);
 
     std::unique_ptr<cirbo::DAG> csat_instance = parser.instantiate();
-    cirbo::utils::NameEncoder encoder = parser.getEncoder();
+    cirbo::utils::NameEncoder encoder         = parser.getEncoder();
 
-    auto [circuit, _] = Composition<
-        DAG,
-        cirbo::minimization::DeMorgan<cirbo::DAG>
-    >().apply(*csat_instance, encoder);
+    auto [circuit, _] = Composition<DAG, cirbo::minimization::DeMorgan<cirbo::DAG> >().apply(*csat_instance, encoder);
 
     REQUIRE(circuit->getNumberOfGates() == 21);
     REQUIRE(circuit->getGateType(0) == GateType::INPUT);
