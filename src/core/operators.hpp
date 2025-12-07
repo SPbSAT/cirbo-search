@@ -2,9 +2,9 @@
 #define CIRBO_SEARCH_CORE_OPERATORS_HPP
 
 #include <cassert>
-#include <functional>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 #include "core/types.hpp"
@@ -217,23 +217,22 @@ CIRBO_OPT_FORCE_INLINE Operator getOperator(GateType const type) noexcept
  * MultipleInput versions of Operators that take a GateStateContainer as an argument.
  */
 
+using OperatorN = GateState (*)(GateStateContainer const&);
 
-using OperatorN = GateState(*)(GateStateContainer const&);
-
-
-namespace impl {
+namespace impl
+{
 
 /**
  * Must be used only for binary operators.
  */
-template<GateState TerminalState=GateState::UNDEFINED>
+template<GateState TerminalState = GateState::UNDEFINED>
 CIRBO_OPT_FORCE_INLINE GateState FoldOperator_(Operator oper, GateStateContainer const& gsc) noexcept
 {
     assert((gsc.size() >= 2) && "Can't fold container with less then 2 elements.");
     GateState state = oper(gsc.at(0), gsc.at(1), GateState::UNDEFINED);
-    for(auto it = gsc.begin() + 2; it != gsc.end(); ++it)
+    for (auto it = gsc.begin() + 2; it != gsc.end(); ++it)
     {
-        if constexpr(TerminalState != GateState::UNDEFINED)
+        if constexpr (TerminalState != GateState::UNDEFINED)
         {
             if (state == TerminalState)
             {
@@ -241,13 +240,11 @@ CIRBO_OPT_FORCE_INLINE GateState FoldOperator_(Operator oper, GateStateContainer
             }
         }
         state = oper(state, *it, GateState::UNDEFINED);
-
     }
     return state;
 }
 
-} // namespace impl
-
+}  // namespace impl
 
 CIRBO_OPT_FORCE_INLINE GateState NOT(GateStateContainer const& gsc) noexcept
 {
@@ -324,17 +321,8 @@ CIRBO_OPT_FORCE_INLINE OperatorN getOperatorN(GateType type) noexcept
     assert(type != GateType::BUFF);
     assert(type != GateType::UNDEFINED);
     // Must be changed if csat::GateType is changed
-    static OperatorN operators_[SupportedOperatorNumber]
-    {
-        &NOT,
-        &AND, &NAND,
-        &OR,  &NOR,
-        &XOR, &NXOR,
-        &IFF,
-        &MUX,
-        &CONST_FALSE,
-        &CONST_TRUE
-    };
+    static OperatorN operators_[SupportedOperatorNumber]{
+        &NOT, &AND, &NAND, &OR, &NOR, &XOR, &NXOR, &IFF, &MUX, &CONST_FALSE, &CONST_TRUE};
     return operators_[getIndexByOperator(type)];
 }
 

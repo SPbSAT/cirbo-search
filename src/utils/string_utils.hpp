@@ -16,7 +16,8 @@ namespace cirbo::string_utils
  *
  * @param str -- string view to process.
  */
-CIRBO_OPT_FORCE_INLINE bool isEmptyLine(const std::string_view str) {
+CIRBO_OPT_FORCE_INLINE bool isEmptyLine(std::string_view const str)
+{
     return (str.empty() || str == "\n" || str == "\r" || str == "\r\n");
 }
 
@@ -28,16 +29,20 @@ CIRBO_OPT_FORCE_INLINE bool isEmptyLine(const std::string_view str) {
  *
  * @param str -- string view, to be trimmed.
  */
-CIRBO_OPT_FORCE_INLINE void trimNewlineCharacter(std::string_view* str) {
-    if (str->empty()) {
+CIRBO_OPT_FORCE_INLINE void trimNewlineCharacter(std::string_view* str)
+{
+    if (str->empty())
+    {
         return;
     }
 
-    if (str->back() == '\n') {
+    if (str->back() == '\n')
+    {
         str->remove_suffix(1);
     }
 
-    if (str->back() == '\r') {
+    if (str->back() == '\r')
+    {
         str->remove_suffix(1);
     }
 }

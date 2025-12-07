@@ -2,8 +2,8 @@
 #define CIRBO_SEARCH_UTILS_CAST_HPP
 
 #include <functional>
-#include <string>
 #include <map>
+#include <string>
 #include <unordered_map>
 
 #include "core/types.hpp"

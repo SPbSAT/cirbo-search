@@ -3,11 +3,11 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdlib>
 #include <functional>
 #include <iostream>
-#include <vector>
 #include <stack>
-#include <cstdlib>
+#include <vector>
 
 #include "core/structures/icircuit.hpp"
 #include "core/types.hpp"
