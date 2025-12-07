@@ -45,7 +45,7 @@ void writeResult(DAG const& simplified_circuit, utils::NameEncoder const& encode
 }
 
 /**
- * Helper to run specific simplification strategies on the circuit.
+ * Helper to run specific minimization strategies on the circuit.
  */
 std::tuple<std::unique_ptr<DAG>, std::unique_ptr<utils::NameEncoder>> applySimplification(
     std::unique_ptr<DAG>& csat_instance,
@@ -73,10 +73,10 @@ void minimize(std::string const& input_file, std::string const& output_file)
     auto encoder       = parser.getEncoder();
     auto csat_instance = parser.instantiate();
 
-    // Start simplification step.
+    // Start minimization step.
     log::debug(input_file, ": minimization start.");
     auto [simplified_instance, simplified_encoder] = applySimplification(csat_instance, encoder);
-    log::debug(input_file, ": simplification end.");
+    log::debug(input_file, ": minimization end.");
 
     writeResult(*simplified_instance, *simplified_encoder, output_file);
 }
