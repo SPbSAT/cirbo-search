@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 project(
         cirbo_search
         VERSION 0.1.0
-        DESCRIPTION "Header-only library for boolean circuits synthesis and simplification."
+        DESCRIPTION "Header-only library for boolean circuits synthesis and minimization."
         HOMEPAGE_URL "https://github.com/SPbSAT/cirbo-search"
         LANGUAGES CXX)
 

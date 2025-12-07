@@ -2,7 +2,9 @@
 #define CIRBO_SEARCH_MINIMIZATION_NEST_HPP
 
 #include <cstddef>
+#include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "core/structures/icircuit.hpp"

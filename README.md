@@ -22,14 +22,14 @@ revert of automatic changes.
 
 To run formatters execute:
 ```sh
-clang-format app/**.cpp --header-filter='^'"$PWD"'/.*' -p build/ --config-file=.clang-tidy
+clang-format -i app/**.cpp src/**.hpp tests/**.cpp
 ```
 
 Note that other source files can be included similarly.
 
 To run linters execute:
 ```sh
-clang-tidy ./src/**.hpp -p build/debug/ --config-file=.clang-tidy
+clang-tidy app/**.cpp --header-filter='^'"$PWD"'/.*' -p build/debug/ --config-file=.clang-tidy
 ```
 
 Note that one should build project before `clang-tidy` can be executed

@@ -1,6 +1,8 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_STRATEGY_HPP
 #define CIRBO_SEARCH_MINIMIZATION_STRATEGY_HPP
 
+#include <type_traits>
+
 #include "core/structures/dag.hpp"
 #include "core/structures/icircuit.hpp"
 #include "minimization/composition.hpp"
@@ -14,7 +16,6 @@
 #include "minimization/low_effort/reduce_not_composition.hpp"
 #include "minimization/low_effort/redundant_gates_cleaner.hpp"
 #include "minimization/low_effort/split_not_from_others.hpp"
-#include "minimization/transformer_base.hpp"
 
 namespace cirbo::minimization
 {
