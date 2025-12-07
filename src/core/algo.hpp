@@ -5,8 +5,11 @@
 #include <cstddef>
 #include <functional>
 #include <iostream>
+#include <vector>
+#include <stack>
+#include <cstdlib>
 
-#include "core/structures/dag.hpp"
+#include "core/structures/icircuit.hpp"
 #include "core/types.hpp"
 
 /**

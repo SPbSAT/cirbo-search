@@ -1,7 +1,11 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_TRANSFORMER_BASE_HPP
 #define CIRBO_SEARCH_MINIMIZATION_TRANSFORMER_BASE_HPP
 
+#include <type_traits>
 #include <string>
+#include <memory>
+#include <utility>
+#include <random>
 
 #include "core/structures/icircuit.hpp"
 #include "core/types.hpp"

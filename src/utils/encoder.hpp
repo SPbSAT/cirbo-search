@@ -5,6 +5,8 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
+#include <utility>
 
 #include "core/types.hpp"
 

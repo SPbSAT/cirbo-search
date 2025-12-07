@@ -4,6 +4,8 @@
 #include <cstddef>
 #include <string>
 #include <utility>
+#include <type_traits>
+#include <memory>
 
 #include "core/structures/icircuit.hpp"
 #include "minimization/composition.hpp"

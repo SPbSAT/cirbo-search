@@ -1,6 +1,10 @@
 #ifndef CIRBO_SEARCH_MINIMIZATION_COMPOSITION_HPP
 #define CIRBO_SEARCH_MINIMIZATION_COMPOSITION_HPP
 
+#include <type_traits>
+#include <string>
+#include <memory>
+
 #include "core/structures/icircuit.hpp"
 #include "minimization/transformer_base.hpp"
 

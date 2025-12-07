@@ -3,6 +3,9 @@
 
 #include <cassert>
 #include <functional>
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 #include "core/types.hpp"
 #include "utils/optimize.hpp"
