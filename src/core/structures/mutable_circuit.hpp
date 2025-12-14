@@ -185,7 +185,7 @@ namespace cirbo
         }
     };
 
-    class MutableCircuit
+    class MutableCircuit : public ICircuit
     {
     private:
         std::vector<MutableNode> gates;
@@ -227,6 +227,60 @@ namespace cirbo
                     , next_gate_id(m_nodes.size())
         {
         }
+
+        [[nodiscard]]
+        GateType getGateType(GateId gateId) const override
+        {
+            return gates[gateId].getType();
+        }
+        
+        [[nodiscard]]
+        GateIdContainer const& getGateOperands(GateId gateId) const override
+        {
+            return gates[gateId].getOperands();
+        }
+
+        [[nodiscard]]
+        GateIdContainer const& getGateUsers(GateId gateId) const override
+        {
+            return gates[gateId].getUsers();
+        }
+
+        [[nodiscard]]
+        GateId getNumberOfGates() const override
+        {
+            return gates.size();
+        }
+
+        [[nodiscard]]
+        GateId getNumberOfGatesWithoutInputs() const override
+        {
+            return gates.size() - input_gates.size();
+        }
+
+        [[nodiscard]]
+        GateIdContainer const& getOutputGates() const override
+        {
+            return output_gates;
+        }
+
+        [[nodiscard]]
+        GateIdContainer const& getInputGates() const override
+        {
+            return input_gates;
+        }
+
+        [[nodiscard]]
+        bool isOutputGate(GateId gateId) const override
+        {
+            auto it = std::ranges::find(output_gates, gateId);
+            if (it != output_gates.end())
+            {
+                return true;
+            }
+            return false;
+        }
+
         
         void addGate(GateType const& g_type, 
                     GateIdContainer const& operands = {}, 
