@@ -188,7 +188,7 @@ namespace cirbo
     class MutableCircuit : public ICircuit
     {
     private:
-        std::vector<MutableNode> gates;
+        std::unordered_map<GateId, std::pair<MutableNode, bool>> gates;
         GateIdContainer input_gates;
         GateIdContainer output_gates;
         GateId next_gate_id;
@@ -208,7 +208,7 @@ namespace cirbo
         {
         }
 
-        MutableCircuit(std::vector<MutableNode> const& m_nodes, 
+        MutableCircuit(std::unordered_map<GateId, std::pair<MutableNode, bool>> const& m_nodes, 
                     GateIdContainer const& inputs,
                     GateIdContainer const& outputs)
                     : gates(m_nodes)
@@ -219,31 +219,49 @@ namespace cirbo
         }
 
         MutableCircuit(std::vector<MutableNode> const& m_nodes, 
+                    GateIdContainer const& inputs,
+                    GateIdContainer const& outputs)
+                    : input_gates(inputs)
+                    , output_gates(outputs)
+                    , next_gate_id(m_nodes.size())
+        {
+            size_t id = 0;
+            for (const MutableNode& node : m_nodes)
+            {
+                gates[node.getId()] = std::make_pair(node, false);
+            }
+        }
+
+        MutableCircuit(std::vector<MutableNode> const& m_nodes, 
                     GateIdContainer&& inputs,
                     GateIdContainer&& outputs)
-                    : gates(m_nodes)
-                    , input_gates{std::move(inputs)}
+                    : input_gates{std::move(inputs)}
                     , output_gates{std::move(outputs)}
                     , next_gate_id(m_nodes.size())
         {
+            size_t id = 0;
+            for (const MutableNode& node : m_nodes)
+            {
+                gates[node.getId()] = std::make_pair(node, false);;
+            }
         }
 
         [[nodiscard]]
         GateType getGateType(GateId gateId) const override
         {
-            return gates[gateId].getType();
+            return gates.at(gateId).first.getType();
         }
         
         [[nodiscard]]
         GateIdContainer const& getGateOperands(GateId gateId) const override
         {
-            return gates[gateId].getOperands();
+            return gates.at(gateId).first.getOperands();
         }
 
         [[nodiscard]]
         GateIdContainer const& getGateUsers(GateId gateId) const override
         {
-            return gates[gateId].getUsers();
+            return gates.at(gateId).first.getUsers();
         }
 
         [[nodiscard]]
@@ -288,7 +306,7 @@ namespace cirbo
                     bool is_output = false)
         {
             GateId new_id = next_gate_id++;
-            gates.emplace_back(MutableNode(new_id, g_type, operands, users));
+            gates[new_id] = std::make_pair(MutableNode(new_id, g_type, operands, users), false);
             if (g_type == GateType::INPUT)
             {
                 input_gates.push_back(new_id);
@@ -302,8 +320,7 @@ namespace cirbo
         void addGate(MutableNode const& m_node, bool is_output = false)
         {
             GateId new_id = next_gate_id++;
-            gates.emplace_back(MutableNode(new_id, m_node.getType(), m_node.getOperands(), m_node.getUsers()));
-
+            gates[new_id] = std::make_pair(MutableNode(new_id, m_node.getType(), m_node.getOperands(), m_node.getUsers()), false);
             if (m_node.getType() == GateType::INPUT)
             {
                 input_gates.push_back(new_id);
@@ -316,41 +333,41 @@ namespace cirbo
 
         void connectGates(GateId new_operand_gate, GateId new_user_gate)
         {
-            gates.at(new_user_gate).addOperand(new_operand_gate);
-            gates.at(new_operand_gate).addUser(new_user_gate);
+            gates.at(new_user_gate).first.addOperand(new_operand_gate);
+            gates.at(new_operand_gate).first.addUser(new_user_gate);
         }
 
         void connectGates(GateIdContainer const& new_operands_gates, GateId new_user_gate)
         {
-            gates.at(new_user_gate).addOperandsContainer(new_operands_gates);
+            gates.at(new_user_gate).first.addOperandsContainer(new_operands_gates);
             for (GateId new_operand_gate : new_operands_gates)
             {
-                gates.at(new_operand_gate).addUser(new_user_gate);
+                gates.at(new_operand_gate).first.addUser(new_user_gate);
             }
         }
 
         void connectGates(GateId new_operand_gate, GateIdContainer const& new_users_gates)
         {
-            gates.at(new_operand_gate).addUsersContainer(new_users_gates);
+            gates.at(new_operand_gate).first.addUsersContainer(new_users_gates);
             for (GateId new_user_gate : new_users_gates)
             {
-                gates.at(new_user_gate).addOperand(new_operand_gate);
+                gates.at(new_user_gate).first.addOperand(new_operand_gate);
             }
         }
         
         void changeGateType(GateId gate_id, GateType new_type)
         {
-            gates.at(gate_id).setType(new_type);
+            gates.at(gate_id).first.setType(new_type);
         }
 
         void clearGateOperands(GateId gate_id)
         {
-            gates.at(gate_id).setOperands({});
+            gates.at(gate_id).first.setOperands({});
         }
 
         void clearGateUsers(GateId gate_id)
         {
-            gates.at(gate_id).setUsers({});
+            gates.at(gate_id).first.setUsers({});
         }
 
         void removeFromInputs(GateId removing_gate_id)
@@ -371,54 +388,25 @@ namespace cirbo
             }
         }
 
-        void updateIds()
+        bool isGateExists(GateId gate_id) const
         {
-            std::unordered_map<GateId, GateId> id_updating;
-            for (size_t i = 0; i < gates.size(); ++i)
-            {
-                id_updating[gates[i].getId()] = i;
-                gates[i].setId(i);
-            }
+            return gates.find(gate_id) != gates.end();
+        }
 
-            for (MutableNode& gate : gates)
-            {
-                GateIdContainer updated_operands_id;
-                GateIdContainer updated_users_id;
-                for (GateId old_operand_id : gate.getOperands())
-                {
-                    updated_operands_id.push_back(id_updating[old_operand_id]);
-                }
-                for (GateId old_user_id : gate.getUsers())
-                {
-                    updated_users_id.push_back(id_updating[old_user_id]);
-                }
-                gate.setOperands(updated_operands_id);
-                gate.setUsers(updated_users_id);
-            }
+        bool isGateHasUsers(GateId gate_id) const
+        {
+            return !gates.at(gate_id).first.getUsers().empty();
         }
 
         void removeGate(GateId removing_gate_id)
-        {
-            auto it = std::ranges::find_if(gates, [removing_gate_id](MutableNode const& m_node) {
-                return m_node.getId() == removing_gate_id;
-            });
-            if (it != gates.end())
+        {   
+            if (isGateExists(removing_gate_id) && isGateHasUsers(removing_gate_id))
             {
-                for (GateId gate_user_id : gates[removing_gate_id].getUsers())
+                gates[removing_gate_id].second = true;
+                for (GateId gate_operand_id : gates[removing_gate_id].first.getOperands())
                 { 
-                    gates[gate_user_id].removeIdFromOperands(removing_gate_id);
+                    gates[gate_operand_id].first.removeIdFromUsers(removing_gate_id);
                 }
-                for (GateId gate_operand_id : gates[removing_gate_id].getOperands())
-                { 
-                    gates[gate_operand_id].removeIdFromUsers(removing_gate_id);
-                }
-                clearGateOperands(removing_gate_id);
-                clearGateUsers(removing_gate_id);
-                gates.erase(it);
-                removeFromInputs(removing_gate_id);
-                removeFromOutputs(removing_gate_id);
-
-                updateIds();
             }
         }
     };
