@@ -67,40 +67,40 @@ public:
     }
 
     /**
-     * @brief Возвращает идентификатор узла
-     * @return GateId - идентификатор узла
+     * @brief Returns the node identifier
+     * @return GateId - node identifier
      */
     GateId getId() const { return id; }
 
     /**
-     * @brief Возвращает тип логического узла
-     * @return GateType - тип логического узла
+     * @brief Returns the logic node type
+     * @return GateType - logic node type
      */
     GateType getType() const { return type; }
 
     /**
-     * @brief Возвращает константную ссылку на контейнер операндов узла
-     * @return GateIdContainer const& - контейнер идентификаторов операндов
+     * @brief Returns a constant reference to the container of node operands
+     * @return GateIdContainer const& - container of operands identifiers
      */
     GateIdContainer const& getOperands() const { return operands; }
 
     /**
-     * @brief Возвращает константную ссылку на контейнер пользователей узла
-     * @return GateIdContainer const& - контейнер идентификаторов пользователей
+     * @brief Returns a constant reference to the container of node users
+     * @return GateIdContainer const& - container of users identifiers
      */
     GateIdContainer const& getUsers() const { return users; }
 
     /**
-     * @brief Добавляет идентификатор пользователя в список пользователей узла
-     * @param gateId идентификатор пользователя для добавления
-     * @post gateId добавлен в конец контейнера users
+     * @brief Adds a user identifier to the node's user list
+     * @param gateId user identifier to add
+     * @post gateId is appended to the users container
      */
     void addUser(GateId const& gateId) { users.push_back(gateId); }
 
     /**
-     * @brief Добавляет контейнер идентификаторов пользователей в список пользователей узла
-     * @param usersIdContainer контейнер идентификаторов пользователей для добавления
-     * @post Все элементы usersIdContainer добавлены в конец контейнера users
+     * @brief Adds a container of users identifiers to the node's user list
+     * @param usersIdContainer container of users identifiers to add
+     * @post All elements of usersIdContainer are appended to the users container
      */
     void addUsersContainer(GateIdContainer const& usersIdContainer)
     {
@@ -108,9 +108,9 @@ public:
     }
 
     /**
-     * @brief Добавляет контейнер идентификаторов пользователей в список пользователей узла с перемещением
-     * @param usersIdContainer контейнер идентификаторов пользователей для перемещения
-     * @post Все элементы usersIdContainer добавлены в конец контейнера users
+     * @brief Adds a container of users identifiers to the node's user list using move semantics
+     * @param usersIdContainer container of users identifiers to move
+     * @post All elements of usersIdContainer are appended to the users container
      */
     void addUsersContainer(GateIdContainer&& usersIdContainer)
     {
@@ -119,16 +119,16 @@ public:
     }
 
     /**
-     * @brief Добавляет идентификатор операнда в список операндов узла
-     * @param gateId идентификатор операнда для добавления
-     * @post gateId добавлен в конец контейнера operands
+     * @brief Adds an operand identifier to the node's operand list
+     * @param gateId operand identifier to add
+     * @post gateId is appended to the operands container
      */
     void addOperand(GateId const& gateId) { operands.push_back(gateId); }
 
     /**
-     * @brief Добавляет контейнер идентификаторов операндов в список операндов узла
-     * @param operandsIdContainer контейнер идентификаторов операндов для добавления
-     * @post Все элементы operandsIdContainer добавлены в конец контейнера operands
+     * @brief Adds a container of operands identifiers to the node's operand list
+     * @param operandsIdContainer container of operands identifiers to add
+     * @post All elements of operandsIdContainer are appended to the operands container
      */
     void addOperandsContainer(GateIdContainer const& operandsIdContainer)
     {
@@ -136,9 +136,9 @@ public:
     }
 
     /**
-     * @brief Добавляет контейнер идентификаторов операндов в список операндов узла с перемещением
-     * @param operandsIdContainer контейнер идентификаторов операндов для перемещения
-     * @post Все элементы operandsIdContainer добавлены в конец контейнера operands
+     * @brief Adds a container of operands identifiers to the node's operand list using move semantics
+     * @param operandsIdContainer container of operands identifiers to move
+     * @post All elements of operandsIdContainer are appended to the operands container
      */
     void addOperandsContainer(GateIdContainer&& operandsIdContainer)
     {
@@ -149,40 +149,40 @@ public:
     }
 
     /**
-     * @brief Устанавливает новый тип логического узла
-     * @param newType новый тип логического узла
+     * @brief Sets a new type for the logic node
+     * @param newType new logic node type
      */
     void setType(GateType const& newType) { type = newType; }
 
     /**
-     * @brief Заменяет текущие операнды узла новыми
-     * @param operandsIdContainer новый контейнер идентификаторов операндов
+     * @brief Replaces the current node operands with new ones
+     * @param operandsIdContainer new container of operands identifiers
      */
     void setOperands(GateIdContainer const& operandsIdContainer) { operands = operandsIdContainer; }
 
     /**
-     * @brief Заменяет текущие операнды узла новыми с перемещением
-     * @param operandsIdContainer новый контейнер идентификаторов операндов для перемещения
+     * @brief Replaces the current node operands with new ones using move semantics
+     * @param operandsIdContainer new container of operands identifiers to move
      */
     void setOperands(GateIdContainer&& operandsIdContainer) { operands = std::move(operandsIdContainer); }
 
     /**
-     * @brief Заменяет текущих пользователей узла новыми
-     * @param usersIdContainer новый контейнер идентификаторов пользователей
+     * @brief Replaces the current node users with new ones
+     * @param usersIdContainer new container of users identifiers
      */
     void setUsers(GateIdContainer const& usersIdContainer) { users = usersIdContainer; }
 
     /**
-     * @brief Заменяет текущих пользователей узла новыми с перемещением
-     * @param usersIdContainer новый контейнер идентификаторов пользователей
+     * @brief Replaces the current node users with new ones using move semantics
+     * @param usersIdContainer new container of users identifiers
      */
     void setUsers(GateIdContainer&& usersIdContainer) { users = std::move(usersIdContainer); }
 
     /**
-     * @brief Удаляет идентификатор из списка пользователей узла
-     * @param removing_id идентификатор для удаления
-     * @post removing_id удален из контейнера users
-     * @post Если removing_id не найден, контейнер users не изменяется
+     * @brief Removes an identifier from the node's user list
+     * @param removing_id identifier to remove
+     * @note If there are multiple occurrences of the same identifier in the container,
+     *       only the first one encountered (from the beginning) will be removed
      */
     void removeIdFromUsers(GateId const removing_id)
     {
@@ -194,10 +194,10 @@ public:
     }
 
     /**
-     * @brief Удаляет идентификатор из списка операндов узла
-     * @param removing_id идентификатор для удаления
-     * @post removing_id удален из контейнера operands
-     * @post Если removing_id не найден, контейнер operands не изменяется
+     * @brief Removes an identifier from the node's operand list
+     * @param removing_id identifier to remove
+     * @note If there are multiple occurrences of the same identifier in the container,
+     *       only the first one encountered (from the beginning) will be removed
      */
     void removeIdFromOperands(GateId const removing_id)
     {
@@ -281,10 +281,10 @@ public:
     }
 
     /**
-     * @brief Возвращает тип логического узла по его идентификатору
-     * @param gateId идентификатор логического узла
-     * @return GateType - тип логического узла
-     * @throws std::out_of_range если gateId не существует
+     * @brief Returns the type of a logic node by its identifier
+     * @param gateId logic node identifier
+     * @return GateType - logic node type
+     * @throws std::out_of_range if gateId does not exist
      */
     [[nodiscard]]
     GateType getGateType(GateId gateId) const override
@@ -293,10 +293,10 @@ public:
     }
 
     /**
-     * @brief Возвращает контейнер операндов логического узла
-     * @param gateId идентификатор логического узла
-     * @return GateIdContainer const& - контейнер идентификаторов операндов
-     * @throws std::out_of_range если gateId не существует
+     * @brief Returns the operand container of a logic node
+     * @param gateId logic node identifier
+     * @return GateIdContainer const& - container of operands identifiers
+     * @throws std::out_of_range if gateId does not exist
      */
     [[nodiscard]]
     GateIdContainer const& getGateOperands(GateId gateId) const override
@@ -305,10 +305,10 @@ public:
     }
 
     /**
-     * @brief Возвращает контейнер пользователей логического узла
-     * @param gateId идентификатор логического узла
-     * @return GateIdContainer const& - контейнер идентификаторов пользователей
-     * @throws std::out_of_range если gateId не существует
+     * @brief Returns the user container of a logic node
+     * @param gateId logic node identifier
+     * @return GateIdContainer const& - container of users identifiers
+     * @throws std::out_of_range if gateId does not exist
      */
     [[nodiscard]]
     GateIdContainer const& getGateUsers(GateId gateId) const override
@@ -317,9 +317,9 @@ public:
     }
 
     /**
-     * @brief Возвращает общее количество логических узлов в схеме
-     * @return GateId - количество логических узлов
-     * @post Результат включает входные, выходные и внутренние узлы
+     * @brief Returns the total number of logic nodes in the circuit
+     * @return GateId - number of logic nodes
+     * @post Result includes input, output, and internal nodes
      */
     [[nodiscard]]
     GateId getNumberOfGates() const override
@@ -328,9 +328,9 @@ public:
     }
 
     /**
-     * @brief Возвращает количество логических узлов без учета входных
-     * @return GateId - количество логических узлов без входных гейтов
-     * @post Результат включает выходные и внутренние узлы
+     * @brief Returns the number of logic nodes excluding inputs
+     * @return GateId - number of logic nodes without input gates
+     * @post Result includes output and internal nodes
      */
     [[nodiscard]]
     GateId getNumberOfGatesWithoutInputs() const override
@@ -339,8 +339,8 @@ public:
     }
 
     /**
-     * @brief Возвращает контейнер идентификаторов выходных узлов схемы
-     * @return GateIdContainer const& - контейнер идентификаторов выходных узлов
+     * @brief Returns the container of output nodes identifiers for the circuit
+     * @return GateIdContainer const& - container of output nodes identifiers
      */
     [[nodiscard]]
     GateIdContainer const& getOutputGates() const override
@@ -349,8 +349,8 @@ public:
     }
 
     /**
-     * @brief Возвращает контейнер идентификаторов входных узлов схемы
-     * @return GateIdContainer const& - контейнер идентификаторов входных узлов
+     * @brief Returns the container of input nodes identifiers for the circuit
+     * @return GateIdContainer const& - container of input nodes identifiers
      */
     [[nodiscard]]
     GateIdContainer const& getInputGates() const override
@@ -359,9 +359,9 @@ public:
     }
 
     /**
-     * @brief Проверяет, является ли элемент выходным узлом схемы
-     * @param gateId идентификатор логического узлв
-     * @return true если узел является выходным, иначе false
+     * @brief Checks if an element is an output node of the circuit
+     * @param gateId logic node identifier
+     * @return true if the node is an output, false otherwise
      */
     [[nodiscard]]
     bool isOutputGate(GateId gateId) const override
@@ -375,15 +375,15 @@ public:
     }
 
     /**
-     * @brief Добавляет новый логический узел в схему
-     * @param g_type тип нового логического узла
-     * @param operands контейнер идентификаторов операндов нового узла
-     * @param is_output флаг, указывающий является ли узел выходным
-     * @post Создан новый узел с уникальным идентификатором
-     * @post Для каждого операнда в operands установлена связь с новым узлом
-     * @post Если g_type == GateType::INPUT, узел добавлен в input_gates
-     * @post Если is_output == true, узел добавлен в output_gates
-     * @post next_gate_id увеличен на 1
+     * @brief Adds a new logic node to the circuit
+     * @param g_type type of the new logic node
+     * @param operands container of operand identifiers for the new node
+     * @param is_output flag indicating whether the node is an output
+     * @post A new node with a unique identifier is created
+     * @post For each operand in operands, a connection to the new node is established
+     * @post If g_type == GateType::INPUT, the node is added to input_gates
+     * @post If is_output == true, the node is added to output_gates
+     * @post next_gate_id is incremented by 1
      */
     void addGate(GateType const& g_type, GateIdContainer const& operands = {}, bool is_output = false)
     {
@@ -407,15 +407,16 @@ public:
     }
 
     /**
-     * @brief Добавляет новый логический узел в схему с перемещением параметров
-     * @param g_type тип нового логического узла
-     * @param operands контейнер идентификаторов операндов нового узла
-     * @param is_output флаг, указывающий является ли узел выходным
-     * @post Создан новый узел с уникальным идентификатором
-     * @post Для каждого операнда в operands установлена связь с новым узлом
-     * @post Если g_type == GateType::INPUT, узел добавлен в input_gates
-     * @post Если is_output == true, узел добавлен в output_gates
-     * @post next_gate_id увеличен на 1
+     * @brief Adds a new logic node to the circuit using move semantics for parameters
+     * @param g_type type of the new logic node
+     * @param operands container of operand identifiers for the new node
+     * @param users container of user identifiers for the new node
+     * @param is_output flag indicating whether the node is an output
+     * @post A new node with a unique identifier is created
+     * @post For each operand in operands, a connection to the new node is established
+     * @post If g_type == GateType::INPUT, the node is added to input_gates
+     * @post If is_output == true, the node is added to output_gates
+     * @post next_gate_id is incremented by 1
      */
     void addGate(
         GateType const&& g_type,
@@ -443,14 +444,14 @@ public:
     }
 
     /**
-     * @brief Добавляет новый логический узел на основе существующего
-     * @param m_node узел, на основе которого создается новый
-     * @param is_output флаг, указывающий является ли узел выходным
-     * @post Создан новый узел с уникальным идентификатором и параметрами из m_node
-     * @post Для каждого операнда в m_node установлена связь с новым узлом
-     * @post Если тип узла == GateType::INPUT, он добавлен в input_gates
-     * @post Если is_output == true, он добавлен в output_gates
-     * @post next_gate_id увеличен на 1
+     * @brief Adds a new logic node based on an existing one
+     * @param m_node node used as a basis for the new one
+     * @param is_output flag indicating whether the node is an output
+     * @post A new node with a unique identifier and parameters from m_node is created
+     * @post For each operand in m_node, a connection to the new node is established
+     * @post If the node type == GateType::INPUT, it is added to input_gates
+     * @post If is_output == true, it is added to output_gates
+     * @post next_gate_id is incremented by 1
      */
     void addGate(MutableNode const& m_node, bool is_output = false)
     {
@@ -475,12 +476,12 @@ public:
     }
 
     /**
-     * @brief Устанавливает связь между двумя узлами
-     * @param new_operand_gate идентификатор узла, который становится операндом
-     * @param new_user_gate идентификатор узла, который становится пользователем
-     * @post new_operand_gate добавлен в операнды new_user_gate
-     * @post new_user_gate добавлен в пользователи new_operand_gate
-     * @throws std::out_of_range если любой из идентификаторов не существует
+     * @brief Establishes a connection between two nodes
+     * @param new_operand_gate identifier of the node that becomes an operand
+     * @param new_user_gate identifier of the node that becomes a user
+     * @post new_operand_gate is added to the operands of new_user_gate
+     * @post new_user_gate is added to the users of new_operand_gate
+     * @throws std::out_of_range if any of the identifiers does not exist
      */
     void connectGates(GateId new_operand_gate, GateId new_user_gate)
     {
@@ -489,19 +490,19 @@ public:
     }
 
     /**
-     * @brief Изменяет тип существующего логического узла
-     * @param gate_id идентификатор изменяемого узла
-     * @param new_type новый тип логического узла
-     * @throws std::out_of_range если gate_id не существует
+     * @brief Changes the type of an existing logic node
+     * @param gate_id identifier of the node to modify
+     * @param new_type new logic node type
+     * @throws std::out_of_range if gate_id does not exist
      */
     void changeGateType(GateId gate_id, GateType new_type) { gates.at(gate_id).first.setType(new_type); }
 
     /**
-     * @brief Очищает список операндов логического узла и удаляет соответствующие связи
-     * @param gate_id идентификатор узла
-     * @post Все узлы удалены из списка операндов gate_id
-     * @post Для каждого бывшего операнда удален gate_id из списка пользователей
-     * @throws std::out_of_range если gate_id не существует
+     * @brief Clears the operand list of a logic node and removes corresponding connections
+     * @param gate_id node identifier
+     * @post All nodes are removed from the operand list of gate_id
+     * @post For each former operand, gate_id is removed from the user list
+     * @throws std::out_of_range if gate_id does not exist
      */
     void clearGateOperands(GateId gate_id)
     {
@@ -511,10 +512,13 @@ public:
     }
 
     /**
-     * @brief Удаляет узел из списка входных гейтов схемы
-     * @param removing_gate_id идентификатор удаляемого узла
-     * @post Если removing_gate_id был во входных узлах, он удален из input_gates
-     * @post Флаг удалённого узла установлен в true
+     * @brief Removes a node from the circuit's input gates list
+     * @param removing_gate_id identifier of the node to remove
+     * @post Only the first occurrence of removing_gate_id is removed from input_gates
+     * @post The deleted node flag is set to true for the removed node
+     * @note If removing_gate_id appears multiple times in input_gates,
+     *       only the first occurrence (from the beginning) is removed
+     * @note The node remains in the circuit's gates container but is marked as deleted
      */
     void removeFromInputs(GateId removing_gate_id)
     {
@@ -527,8 +531,8 @@ public:
     }
 
     // /**
-    //  * @brief Удаляет элемент из списка выходных элементов схемы
-    //  * @param removing_gate_id идентификатор удаляемого элемента
+    //  * @brief Removes an element from the circuit's output elements list
+    //  * @param removing_gate_id identifier of the element to remove
     //  */
     // void removeFromOutputs(GateId removing_gate_id)
     // {
@@ -540,28 +544,28 @@ public:
     // }
 
     /**
-     * @brief Проверяет существование логического узла в схеме
-     * @param gate_id идентификатор проверяемого узла
-     * @return true если элемент существует, false в противном случае
+     * @brief Checks if a logic node exists in the circuit
+     * @param gate_id identifier of the node to check
+     * @return true if the element exists, false otherwise
      */
     bool isGateExists(GateId gate_id) const { return gates.find(gate_id) != gates.end(); }
 
     /**
-     * @brief Проверяет, имеет ли логический узел пользователей
-     * @param gate_id идентификатор проверяемого узла
-     * @return true если элемент имеет хотя бы одного пользователя, false в противном случае
-     * @throws std::out_of_range если gate_id не существует
+     * @brief Checks if a logic node has users
+     * @param gate_id identifier of the node to check
+     * @return true if the element has at least one user, false otherwise
+     * @throws std::out_of_range if gate_id does not exist
      */
     bool isGateHasUsers(GateId gate_id) const { return !gates.at(gate_id).first.getUsers().empty(); }
 
     /**
-     * @brief Удаляет логический узел из схемы
-     * @param removing_gate_id идентификатор удаляемого узла
-     * @pre removing_gate_id должен существовать в схеме
-     * @pre removing_gate_id не должен иметь пользователей
-     * @post Если элемент был входным, он удаляется из input_gates
-     * @post Если элемент не был входным, очищаются его операнды
-     * @post Элемент остается в контейнере gates с флагом удаления
+     * @brief Removes a logic node from the circuit
+     * @param removing_gate_id identifier of the node to remove
+     * @pre removing_gate_id must exist in the circuit
+     * @pre removing_gate_id must not have users
+     * @post If the element was an input, it is removed from input_gates
+     * @post If the element was not an input, its operands are cleared
+     * @post The element remains in the gates container with a deletion flag
      */
     void removeGate(GateId removing_gate_id)
     {
