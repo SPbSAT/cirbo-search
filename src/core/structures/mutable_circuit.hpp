@@ -66,28 +66,12 @@ public:
     {
     }
 
-    /**
-     * @brief Returns the node identifier
-     * @return GateId - node identifier
-     */
     GateId getId() const { return id; }
 
-    /**
-     * @brief Returns the logic node type
-     * @return GateType - logic node type
-     */
     GateType getType() const { return type; }
 
-    /**
-     * @brief Returns a constant reference to the container of node operands
-     * @return GateIdContainer const& - container of operands identifiers
-     */
     GateIdContainer const& getOperands() const { return operands; }
 
-    /**
-     * @brief Returns a constant reference to the container of node users
-     * @return GateIdContainer const& - container of users identifiers
-     */
     GateIdContainer const& getUsers() const { return users; }
 
     /**
@@ -148,10 +132,6 @@ public:
             std::move_iterator(operandsIdContainer.end()));
     }
 
-    /**
-     * @brief Sets a new type for the logic node
-     * @param newType new logic node type
-     */
     void setType(GateType const& newType) { type = newType; }
 
     /**
