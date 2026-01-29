@@ -79,7 +79,7 @@ public:
      * @param gateId user identifier to add
      * @post gateId is appended to the users container
      */
-    void addUser(GateId const& gateId) { users.push_back(gateId); }
+    void addUser(GateId gateId) { users.push_back(gateId); }
 
     /**
      * @brief Adds a container of users identifiers to the node's user list
@@ -107,7 +107,7 @@ public:
      * @param gateId operand identifier to add
      * @post gateId is appended to the operands container
      */
-    void addOperand(GateId const& gateId) { operands.push_back(gateId); }
+    void addOperand(GateId gateId) { operands.push_back(gateId); }
 
     /**
      * @brief Adds a container of operands identifiers to the node's operand list
@@ -132,7 +132,7 @@ public:
             std::move_iterator(operandsIdContainer.end()));
     }
 
-    void setType(GateType const& newType) { type = newType; }
+    void setType(GateType newType) { type = newType; }
 
     /**
      * @brief Replaces the current node operands with new ones
@@ -365,7 +365,7 @@ public:
      * @post If is_output == true, the node is added to output_gates
      * @post next_gate_id is incremented by 1
      */
-    void addGate(GateType const& g_type, GateIdContainer const& operands = {}, bool is_output = false)
+    void addGate(GateType g_type, GateIdContainer const& operands = {}, bool is_output = false)
     {
         GateId new_id = next_gate_id++;
         gates[new_id] = std::make_pair(MutableNode(new_id, g_type, operands), false);
