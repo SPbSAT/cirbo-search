@@ -197,6 +197,17 @@ private:
     GateIdContainer output_gates;
     GateId next_gate_id;
 
+    void validateGateIds(GateIdContainer const& ids) const
+    {
+        for (GateId id : ids)
+        {
+            if (!gates.contains(id))
+            {
+                throw std::out_of_range("Gate ID " + std::to_string(id) + " does not exist");
+            }
+        }
+    }
+
 public:
     MutableCircuit()                                           = default;
     ~MutableCircuit()                                          = default;
@@ -221,6 +232,8 @@ public:
         , output_gates(outputs)
         , next_gate_id(0)
     {
+        validateGateIds(inputs);
+        validateGateIds(outputs);
         if (!m_nodes.empty())
         {
             auto it = std::ranges::max_element(m_nodes, [](auto const& a, auto const& b) { return a.first < b.first; });
@@ -243,6 +256,10 @@ public:
             gates[node.getId()] = std::make_pair(node, false);
             max_id              = std::max(max_id, node.getId());
         }
+
+        validateGateIds(inputs);
+        validateGateIds(outputs);
+
         next_gate_id = max_id + 1;
     }
 
@@ -257,6 +274,10 @@ public:
             gates[node.getId()] = std::make_pair(node, false);
             max_id              = std::max(max_id, node.getId());
         }
+
+        validateGateIds(inputs);
+        validateGateIds(outputs);
+
         next_gate_id = max_id + 1;
     }
 
@@ -359,16 +380,18 @@ public:
      * @param g_type type of the new logic node
      * @param operands container of operand identifiers for the new node
      * @param is_output flag indicating whether the node is an output
+     * @throws std::out_of_range if any operand identifier does not exist in the circuit
      * @post A new node with a unique identifier is created
      * @post For each operand in operands, a connection to the new node is established
      * @post If g_type == GateType::INPUT, the node is added to input_gates
      * @post If is_output == true, the node is added to output_gates
-     * @post next_gate_id is incremented by 1
      */
     void addGate(GateType g_type, GateIdContainer const& operands = {}, bool is_output = false)
     {
+        validateGateIds(operands);
+
         GateId new_id = next_gate_id++;
-        gates[new_id] = std::make_pair(MutableNode(new_id, g_type, operands), false);
+        gates[new_id] = std::make_pair(MutableNode(new_id, g_type, {}), false);
         for (GateId operand_id : operands)
         {
             if (gates.contains(operand_id))
@@ -392,20 +415,24 @@ public:
      * @param operands container of operand identifiers for the new node
      * @param users container of user identifiers for the new node
      * @param is_output flag indicating whether the node is an output
+     * @throws std::out_of_range if any operand or user identifier does not exist in the circuit
      * @post A new node with a unique identifier is created
      * @post For each operand in operands, a connection to the new node is established
+     * @post For each user in users, a connection from the new node is established
      * @post If g_type == GateType::INPUT, the node is added to input_gates
      * @post If is_output == true, the node is added to output_gates
-     * @post next_gate_id is incremented by 1
      */
     void addGate(
-        GateType const&& g_type,
-        GateIdContainer const&& operands = {},
-        GateIdContainer const&& users    = {},
+        GateType g_type,
+        GateIdContainer&& operands = {},
+        GateIdContainer&& users    = {},
         bool is_output                   = false)
     {
+        validateGateIds(operands);
+        validateGateIds(users);
+
         GateId new_id = next_gate_id++;
-        gates[new_id] = std::make_pair(MutableNode(new_id, g_type, operands, users), false);
+        gates[new_id] = std::make_pair(MutableNode(new_id, g_type, {}), false);
         for (GateId operand_id : operands)
         {
             if (gates.contains(operand_id))
@@ -413,39 +440,14 @@ public:
                 connectGates(operand_id, new_id);
             }
         }
-        if (g_type == GateType::INPUT)
+        for (GateId user_id : users)
         {
-            input_gates.push_back(new_id);
-        }
-        if (is_output)
-        {
-            output_gates.push_back(new_id);
-        }
-    }
-
-    /**
-     * @brief Adds a new logic node based on an existing one
-     * @param m_node node used as a basis for the new one
-     * @param is_output flag indicating whether the node is an output
-     * @post A new node with a unique identifier and parameters from m_node is created
-     * @post For each operand in m_node, a connection to the new node is established
-     * @post If the node type == GateType::INPUT, it is added to input_gates
-     * @post If is_output == true, it is added to output_gates
-     * @post next_gate_id is incremented by 1
-     */
-    void addGate(MutableNode const& m_node, bool is_output = false)
-    {
-        GateId new_id = next_gate_id++;
-        gates[new_id] =
-            std::make_pair(MutableNode(new_id, m_node.getType(), m_node.getOperands(), m_node.getUsers()), false);
-        for (GateId operand_id : m_node.getOperands())
-        {
-            if (gates.contains(operand_id))
+            if (gates.contains(user_id))
             {
-                connectGates(operand_id, new_id);
+                connectGates(new_id, user_id);
             }
         }
-        if (m_node.getType() == GateType::INPUT)
+        if (g_type == GateType::INPUT)
         {
             input_gates.push_back(new_id);
         }
@@ -541,29 +543,32 @@ public:
     /**
      * @brief Removes a logic node from the circuit
      * @param removing_gate_id identifier of the node to remove
-     * @pre removing_gate_id must exist in the circuit
-     * @pre removing_gate_id must not have users
+     * @throws std::out_of_range if removing_gate_id does not exist
+     * @throws std::logic_error if removing_gate_id has users
      * @post If the element was an input, it is removed from input_gates
      * @post If the element was not an input, its operands are cleared
      * @post The element remains in the gates container with a deletion flag
      */
     void removeGate(GateId removing_gate_id)
     {
-        if (isGateExists(removing_gate_id) && !isGateHasUsers(removing_gate_id))
+        if (isGateHasUsers(removing_gate_id))
         {
-            gates[removing_gate_id].second = true;
-            if (gates[removing_gate_id].first.getType() == GateType::INPUT)
+            throw std::logic_error("Cannot remove gate " + std::to_string(removing_gate_id) + " that has users");
+        }
+        
+        gates.at(removing_gate_id).second = true;
+        
+        if (gates.at(removing_gate_id).first.getType() == GateType::INPUT)
+        {
+            auto it = std::ranges::find(input_gates, removing_gate_id);
+            if (it != input_gates.end())
             {
-                auto it = std::ranges::find(input_gates, removing_gate_id);
-                if (it != input_gates.end())
-                {
-                    input_gates.erase(it);
-                }
+                input_gates.erase(it);
             }
-            else
-            {
-                clearGateOperands(removing_gate_id);
-            }
+        }
+        else
+        {
+            clearGateOperands(removing_gate_id);
         }
     }
 };
