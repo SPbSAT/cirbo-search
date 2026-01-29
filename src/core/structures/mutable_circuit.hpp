@@ -484,20 +484,6 @@ public:
     void changeGateType(GateId gate_id, GateType new_type) { gates.at(gate_id).first.setType(new_type); }
 
     /**
-     * @brief Clears the operand list of a logic node and removes corresponding connections
-     * @param gate_id node identifier
-     * @post All nodes are removed from the operand list of gate_id
-     * @post For each former operand, gate_id is removed from the user list
-     * @throws std::out_of_range if gate_id does not exist
-     */
-    void clearGateOperands(GateId gate_id)
-    {
-        GateIdContainer operands = gates.at(gate_id).first.getOperands();
-        for (GateId operand_id : operands) { gates.at(operand_id).first.removeIdFromUsers(gate_id); }
-        gates.at(gate_id).first.setOperands({});
-    }
-
-    /**
      * @brief Removes a node from the circuit's input gates list
      * @param removing_gate_id identifier of the node to remove
      * @post Only the first occurrence of removing_gate_id is removed from input_gates
