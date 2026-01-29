@@ -9,189 +9,190 @@
 
 namespace cirbo
 {
-class MutableNode
-{
-private:
-    GateId id     = 0;
-    GateType type = GateType::UNDEFINED;
-    GateIdContainer operands;
-    GateIdContainer users;
-
-public:
-    MutableNode()                                     = default;
-    ~MutableNode()                                    = default;
-    MutableNode(MutableNode& m_node)                  = default;
-    MutableNode(MutableNode const& m_node)            = default;
-    MutableNode& operator=(MutableNode const& m_node) = default;
-
-    MutableNode(MutableNode&& m_node)
-        : id(std::exchange(m_node.id, 0))
-        , type(std::exchange(m_node.type, GateType::UNDEFINED))
-        , operands(std::exchange(m_node.operands, {}))
-        , users(std::exchange(m_node.users, {}))
-    {
-    }
-
-    MutableNode(
-        GateId const g_id,
-        GateType const g_type,
-        GateIdContainer const& g_operands,
-        GateIdContainer const& g_users)
-        : id(g_id)
-        , type(g_type)
-        , operands(g_operands)
-        , users(g_users)
-    {
-    }
-
-    MutableNode(GateId const g_id, GateType const g_type, GateIdContainer&& g_operands, GateIdContainer&& g_users)
-        : id(g_id)
-        , type(g_type)
-        , operands{std::move(g_operands)}
-        , users{std::move(g_users)}
-    {
-    }
-
-    MutableNode(GateId const g_id, GateType const g_type, GateIdContainer const& g_operands)
-        : id(g_id)
-        , type(g_type)
-        , operands(g_operands)
-    {
-    }
-
-    MutableNode(GateId const g_id, GateType const g_type, GateIdContainer&& g_operands)
-        : id(g_id)
-        , type(g_type)
-        , operands{std::move(g_operands)}
-    {
-    }
-
-    GateId getId() const { return id; }
-
-    GateType getType() const { return type; }
-
-    GateIdContainer const& getOperands() const { return operands; }
-
-    GateIdContainer const& getUsers() const { return users; }
-
-    /**
-     * @brief Adds a user identifier to the node's user list
-     * @param gateId user identifier to add
-     * @post gateId is appended to the users container
-     */
-    void addUser(GateId gateId) { users.push_back(gateId); }
-
-    /**
-     * @brief Adds a container of users identifiers to the node's user list
-     * @param usersIdContainer container of users identifiers to add
-     * @post All elements of usersIdContainer are appended to the users container
-     */
-    void addUsersContainer(GateIdContainer const& usersIdContainer)
-    {
-        users.insert(users.end(), usersIdContainer.begin(), usersIdContainer.end());
-    }
-
-    /**
-     * @brief Adds a container of users identifiers to the node's user list using move semantics
-     * @param usersIdContainer container of users identifiers to move
-     * @post All elements of usersIdContainer are appended to the users container
-     */
-    void addUsersContainer(GateIdContainer&& usersIdContainer)
-    {
-        users.insert(
-            users.end(), std::move_iterator(usersIdContainer.begin()), std::move_iterator(usersIdContainer.end()));
-    }
-
-    /**
-     * @brief Adds an operand identifier to the node's operand list
-     * @param gateId operand identifier to add
-     * @post gateId is appended to the operands container
-     */
-    void addOperand(GateId gateId) { operands.push_back(gateId); }
-
-    /**
-     * @brief Adds a container of operands identifiers to the node's operand list
-     * @param operandsIdContainer container of operands identifiers to add
-     * @post All elements of operandsIdContainer are appended to the operands container
-     */
-    void addOperandsContainer(GateIdContainer const& operandsIdContainer)
-    {
-        operands.insert(operands.end(), operandsIdContainer.begin(), operandsIdContainer.end());
-    }
-
-    /**
-     * @brief Adds a container of operands identifiers to the node's operand list using move semantics
-     * @param operandsIdContainer container of operands identifiers to move
-     * @post All elements of operandsIdContainer are appended to the operands container
-     */
-    void addOperandsContainer(GateIdContainer&& operandsIdContainer)
-    {
-        operands.insert(
-            operands.end(),
-            std::move_iterator(operandsIdContainer.begin()),
-            std::move_iterator(operandsIdContainer.end()));
-    }
-
-    void setType(GateType newType) { type = newType; }
-
-    /**
-     * @brief Replaces the current node operands with new ones
-     * @param operandsIdContainer new container of operands identifiers
-     */
-    void setOperands(GateIdContainer const& operandsIdContainer) { operands = operandsIdContainer; }
-
-    /**
-     * @brief Replaces the current node operands with new ones using move semantics
-     * @param operandsIdContainer new container of operands identifiers to move
-     */
-    void setOperands(GateIdContainer&& operandsIdContainer) { operands = std::move(operandsIdContainer); }
-
-    /**
-     * @brief Replaces the current node users with new ones
-     * @param usersIdContainer new container of users identifiers
-     */
-    void setUsers(GateIdContainer const& usersIdContainer) { users = usersIdContainer; }
-
-    /**
-     * @brief Replaces the current node users with new ones using move semantics
-     * @param usersIdContainer new container of users identifiers
-     */
-    void setUsers(GateIdContainer&& usersIdContainer) { users = std::move(usersIdContainer); }
-
-    /**
-     * @brief Removes an identifier from the node's user list
-     * @param removing_id identifier to remove
-     * @note If there are multiple occurrences of the same identifier in the container,
-     *       only the first one encountered (from the beginning) will be removed
-     */
-    void removeIdFromUsers(GateId const removing_id)
-    {
-        auto it = std::ranges::find(users, removing_id);
-        if (it != users.end())
-        {
-            users.erase(it);
-        }
-    }
-
-    /**
-     * @brief Removes an identifier from the node's operand list
-     * @param removing_id identifier to remove
-     * @note If there are multiple occurrences of the same identifier in the container,
-     *       only the first one encountered (from the beginning) will be removed
-     */
-    void removeIdFromOperands(GateId const removing_id)
-    {
-        auto it = std::ranges::find(operands, removing_id);
-        if (it != operands.end())
-        {
-            operands.erase(it);
-        }
-    }
-};
-
 class MutableCircuit : public ICircuit
 {
 private:
+
+    class MutableNode
+    {
+    private:
+        GateId id     = 0;
+        GateType type = GateType::UNDEFINED;
+        GateIdContainer operands;
+        GateIdContainer users;
+
+    public:
+        MutableNode()                                     = default;
+        ~MutableNode()                                    = default;
+        MutableNode(MutableNode& m_node)                  = default;
+        MutableNode(MutableNode const& m_node)            = default;
+        MutableNode& operator=(MutableNode const& m_node) = default;
+
+        MutableNode(MutableNode&& m_node)
+            : id(std::exchange(m_node.id, 0))
+            , type(std::exchange(m_node.type, GateType::UNDEFINED))
+            , operands(std::exchange(m_node.operands, {}))
+            , users(std::exchange(m_node.users, {}))
+        {
+        }
+
+        MutableNode(
+            GateId const g_id,
+            GateType const g_type,
+            GateIdContainer const& g_operands,
+            GateIdContainer const& g_users)
+            : id(g_id)
+            , type(g_type)
+            , operands(g_operands)
+            , users(g_users)
+        {
+        }
+
+        MutableNode(GateId const g_id, GateType const g_type, GateIdContainer&& g_operands, GateIdContainer&& g_users)
+            : id(g_id)
+            , type(g_type)
+            , operands{std::move(g_operands)}
+            , users{std::move(g_users)}
+        {
+        }
+
+        MutableNode(GateId const g_id, GateType const g_type, GateIdContainer const& g_operands)
+            : id(g_id)
+            , type(g_type)
+            , operands(g_operands)
+        {
+        }
+
+        MutableNode(GateId const g_id, GateType const g_type, GateIdContainer&& g_operands)
+            : id(g_id)
+            , type(g_type)
+            , operands{std::move(g_operands)}
+        {
+        }
+
+        GateId getId() const { return id; }
+
+        GateType getType() const { return type; }
+
+        GateIdContainer const& getOperands() const { return operands; }
+
+        GateIdContainer const& getUsers() const { return users; }
+
+        /**
+         * @brief Adds a user identifier to the node's user list
+         * @param gateId user identifier to add
+         * @post gateId is appended to the users container
+         */
+        void addUser(GateId gateId) { users.push_back(gateId); }
+
+        /**
+         * @brief Adds a container of users identifiers to the node's user list
+         * @param usersIdContainer container of users identifiers to add
+         * @post All elements of usersIdContainer are appended to the users container
+         */
+        void addUsersContainer(GateIdContainer const& usersIdContainer)
+        {
+            users.insert(users.end(), usersIdContainer.begin(), usersIdContainer.end());
+        }
+
+        /**
+         * @brief Adds a container of users identifiers to the node's user list using move semantics
+         * @param usersIdContainer container of users identifiers to move
+         * @post All elements of usersIdContainer are appended to the users container
+         */
+        void addUsersContainer(GateIdContainer&& usersIdContainer)
+        {
+            users.insert(
+                users.end(), std::move_iterator(usersIdContainer.begin()), std::move_iterator(usersIdContainer.end()));
+        }
+
+        /**
+         * @brief Adds an operand identifier to the node's operand list
+         * @param gateId operand identifier to add
+         * @post gateId is appended to the operands container
+         */
+        void addOperand(GateId gateId) { operands.push_back(gateId); }
+
+        /**
+         * @brief Adds a container of operands identifiers to the node's operand list
+         * @param operandsIdContainer container of operands identifiers to add
+         * @post All elements of operandsIdContainer are appended to the operands container
+         */
+        void addOperandsContainer(GateIdContainer const& operandsIdContainer)
+        {
+            operands.insert(operands.end(), operandsIdContainer.begin(), operandsIdContainer.end());
+        }
+
+        /**
+         * @brief Adds a container of operands identifiers to the node's operand list using move semantics
+         * @param operandsIdContainer container of operands identifiers to move
+         * @post All elements of operandsIdContainer are appended to the operands container
+         */
+        void addOperandsContainer(GateIdContainer&& operandsIdContainer)
+        {
+            operands.insert(
+                operands.end(),
+                std::move_iterator(operandsIdContainer.begin()),
+                std::move_iterator(operandsIdContainer.end()));
+        }
+
+        void setType(GateType newType) { type = newType; }
+
+        /**
+         * @brief Replaces the current node operands with new ones
+         * @param operandsIdContainer new container of operands identifiers
+         */
+        void setOperands(GateIdContainer const& operandsIdContainer) { operands = operandsIdContainer; }
+
+        /**
+         * @brief Replaces the current node operands with new ones using move semantics
+         * @param operandsIdContainer new container of operands identifiers to move
+         */
+        void setOperands(GateIdContainer&& operandsIdContainer) { operands = std::move(operandsIdContainer); }
+
+        /**
+         * @brief Replaces the current node users with new ones
+         * @param usersIdContainer new container of users identifiers
+         */
+        void setUsers(GateIdContainer const& usersIdContainer) { users = usersIdContainer; }
+
+        /**
+         * @brief Replaces the current node users with new ones using move semantics
+         * @param usersIdContainer new container of users identifiers
+         */
+        void setUsers(GateIdContainer&& usersIdContainer) { users = std::move(usersIdContainer); }
+
+        /**
+         * @brief Removes an identifier from the node's user list
+         * @param removing_id identifier to remove
+         * @note If there are multiple occurrences of the same identifier in the container,
+         *       only the first one encountered (from the beginning) will be removed
+         */
+        void removeIdFromUsers(GateId const removing_id)
+        {
+            auto it = std::ranges::find(users, removing_id);
+            if (it != users.end())
+            {
+                users.erase(it);
+            }
+        }
+
+        /**
+         * @brief Removes an identifier from the node's operand list
+         * @param removing_id identifier to remove
+         * @note If there are multiple occurrences of the same identifier in the container,
+         *       only the first one encountered (from the beginning) will be removed
+         */
+        void removeIdFromOperands(GateId const removing_id)
+        {
+            auto it = std::ranges::find(operands, removing_id);
+            if (it != operands.end())
+            {
+                operands.erase(it);
+            }
+        }
+    };
+
     std::unordered_map<GateId, std::pair<MutableNode, bool>> gates;
     GateIdContainer input_gates;
     GateIdContainer output_gates;
@@ -224,61 +225,68 @@ public:
     }
 
     MutableCircuit(
-        std::unordered_map<GateId, std::pair<MutableNode, bool>> const& m_nodes,
-        GateIdContainer const& inputs,
-        GateIdContainer const& outputs)
-        : gates(m_nodes)
-        , input_gates(inputs)
-        , output_gates(outputs)
-        , next_gate_id(0)
-    {
-        validateGateIds(inputs);
-        validateGateIds(outputs);
-        if (!m_nodes.empty())
-        {
-            auto it = std::ranges::max_element(m_nodes, [](auto const& a, auto const& b) { return a.first < b.first; });
-
-            next_gate_id = it->first + 1;
-        }
-    }
-
-    MutableCircuit(
-        std::vector<MutableNode> const& m_nodes,
+        GateInfoContainer const& gates_info,
         GateIdContainer const& inputs,
         GateIdContainer const& outputs)
         : input_gates(inputs)
         , output_gates(outputs)
-        , next_gate_id(0)
+        , next_gate_id(gates_info.size())
     {
-        size_t max_id = 0;
-        for (MutableNode const& node : m_nodes)
+        for (GateId id = 0; id < gates_info.size(); ++id)
         {
-            gates[node.getId()] = std::make_pair(node, false);
-            max_id              = std::max(max_id, node.getId());
+            GateInfo const& info = gates_info[id];
+            gates[id] = std::make_pair(
+                MutableNode(id, info.getType(), info.getOperands()),
+                false
+            );
         }
 
-        validateGateIds(inputs);
-        validateGateIds(outputs);
+        for (auto& [id, pair] : gates)
+        {
+            MutableNode& node = pair.first;
+            for (GateId operand_id : node.getOperands())
+            {
+                if (gates.contains(operand_id))
+                {
+                    gates.at(operand_id).first.addUser(id);
+                }
+            }
+        }
 
-        next_gate_id = max_id + 1;
+        validateGateIds(input_gates);
+        validateGateIds(output_gates);
     }
 
-    MutableCircuit(std::vector<MutableNode> const& m_nodes, GateIdContainer&& inputs, GateIdContainer&& outputs)
-        : input_gates{std::move(inputs)}
-        , output_gates{std::move(outputs)}
-        , next_gate_id(0)
+    MutableCircuit(GateInfoContainer&& gates_info,
+                GateIdContainer&& inputs,
+                GateIdContainer&& outputs)
+        : input_gates(std::move(inputs))
+        , output_gates(std::move(outputs))
+        , next_gate_id(gates_info.size())
     {
-        size_t max_id = 0;
-        for (MutableNode const& node : m_nodes)
+        for (GateId id = 0; id < gates_info.size(); ++id)
         {
-            gates[node.getId()] = std::make_pair(node, false);
-            max_id              = std::max(max_id, node.getId());
+            GateInfo& info = gates_info[id];
+            gates[id] = std::make_pair(
+                MutableNode(id, info.getType(), info.moveOperands()),
+                false
+            );
         }
 
-        validateGateIds(inputs);
-        validateGateIds(outputs);
+        for (auto& [id, pair] : gates)
+        {
+            MutableNode& node = pair.first;
+            for (GateId operand_id : node.getOperands())
+            {
+                if (gates.contains(operand_id))
+                {
+                    gates.at(operand_id).first.addUser(id);
+                }
+            }
+        }
 
-        next_gate_id = max_id + 1;
+        validateGateIds(input_gates);
+        validateGateIds(output_gates);
     }
 
     /**
@@ -422,11 +430,7 @@ public:
      * @post If g_type == GateType::INPUT, the node is added to input_gates
      * @post If is_output == true, the node is added to output_gates
      */
-    void addGate(
-        GateType g_type,
-        GateIdContainer&& operands = {},
-        GateIdContainer&& users    = {},
-        bool is_output                   = false)
+    void addGate(GateType g_type, GateIdContainer&& operands = {}, GateIdContainer&& users = {}, bool is_output = false)
     {
         validateGateIds(operands);
         validateGateIds(users);
@@ -512,19 +516,6 @@ public:
         }
     }
 
-    // /**
-    //  * @brief Removes an element from the circuit's output elements list
-    //  * @param removing_gate_id identifier of the element to remove
-    //  */
-    // void removeFromOutputs(GateId removing_gate_id)
-    // {
-    //     auto it = std::ranges::find(output_gates, removing_gate_id);
-    //     if (it != output_gates.end())
-    //     {
-    //         output_gates.erase(it);
-    //     }
-    // }
-
     /**
      * @brief Checks if a logic node exists in the circuit
      * @param gate_id identifier of the node to check
@@ -555,9 +546,9 @@ public:
         {
             throw std::logic_error("Cannot remove gate " + std::to_string(removing_gate_id) + " that has users");
         }
-        
+
         gates.at(removing_gate_id).second = true;
-        
+
         if (gates.at(removing_gate_id).first.getType() == GateType::INPUT)
         {
             auto it = std::ranges::find(input_gates, removing_gate_id);
