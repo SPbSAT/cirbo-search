@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "core/structures/dag.hpp"
 #include "core/structures/gate_info.hpp"
@@ -74,14 +75,31 @@ private:
 
         GateType getType() const { return type; }
 
+        /**
+         * @brief Returns the operand container of the node
+         * @return GateIdContainer const& - container of operands identifiers
+         * @note The container may contain duplicate identifiers when the same gate
+         *       is used multiple times as an operand
+         * @note The order of operands is preserved and may be significant for
+         *       non-commutative operations
+         */
         GateIdContainer const& getOperands() const { return operands; }
 
+        /**
+         * @brief Returns the user container of the node
+         * @return GateIdContainer const& - container of users identifiers
+         * @note The container may contain duplicate identifiers when this gate
+         *       is used multiple times as an operand by another gate
+         *       (e.g., if y = AND(x, x) exists, then x.users will contain y twice)
+         */
         GateIdContainer const& getUsers() const { return users; }
 
         /**
          * @brief Adds a user identifier to the node's user list
          * @param gateId user identifier to add
          * @post gateId is appended to the users container
+         * @note Multiple identical user identifiers are allowed to support
+         *       gates with duplicate operands like AND(x, x)
          */
         void addUser(GateId gateId) { users.push_back(gateId); }
 
@@ -89,6 +107,7 @@ private:
          * @brief Adds a container of users identifiers to the node's user list
          * @param usersIdContainer container of users identifiers to add
          * @post All elements of usersIdContainer are appended to the users container
+         * @note Multiple identical users identifiers are allowed
          */
         void addUsersContainer(GateIdContainer const& usersIdContainer)
         {
@@ -99,6 +118,7 @@ private:
          * @brief Adds a container of users identifiers to the node's user list using move semantics
          * @param usersIdContainer container of users identifiers to move
          * @post All elements of usersIdContainer are appended to the users container
+         * @note Multiple identical users identifiers are allowed
          */
         void addUsersContainer(GateIdContainer&& usersIdContainer)
         {
@@ -110,6 +130,7 @@ private:
          * @brief Adds an operand identifier to the node's operand list
          * @param gateId operand identifier to add
          * @post gateId is appended to the operands container
+         * @note Multiple identical operand identifiers are allowed
          */
         void addOperand(GateId gateId) { operands.push_back(gateId); }
 
@@ -117,6 +138,7 @@ private:
          * @brief Adds a container of operands identifiers to the node's operand list
          * @param operandsIdContainer container of operands identifiers to add
          * @post All elements of operandsIdContainer are appended to the operands container
+         * @note Multiple identical operands identifiers are allowed
          */
         void addOperandsContainer(GateIdContainer const& operandsIdContainer)
         {
@@ -127,6 +149,7 @@ private:
          * @brief Adds a container of operands identifiers to the node's operand list using move semantics
          * @param operandsIdContainer container of operands identifiers to move
          * @post All elements of operandsIdContainer are appended to the operands container
+         * @note Multiple identical operands identifiers are allowed
          */
         void addOperandsContainer(GateIdContainer&& operandsIdContainer)
         {
@@ -141,54 +164,78 @@ private:
         /**
          * @brief Replaces the current node operands with new ones
          * @param operandsIdContainer new container of operands identifiers
+         * @note Multiple identical operands identifiers are allowed
          */
         void setOperands(GateIdContainer const& operandsIdContainer) { operands = operandsIdContainer; }
 
         /**
          * @brief Replaces the current node operands with new ones using move semantics
          * @param operandsIdContainer new container of operands identifiers to move
+         * @note Multiple identical operand identifiers are allowed
          */
         void setOperands(GateIdContainer&& operandsIdContainer) { operands = std::move(operandsIdContainer); }
 
         /**
          * @brief Replaces the current node users with new ones
          * @param usersIdContainer new container of users identifiers
+         * @note Multiple identical users identifiers are allowed
          */
         void setUsers(GateIdContainer const& usersIdContainer) { users = usersIdContainer; }
 
         /**
          * @brief Replaces the current node users with new ones using move semantics
          * @param usersIdContainer new container of users identifiers
+         * @note Multiple identical users identifiers are allowed
          */
         void setUsers(GateIdContainer&& usersIdContainer) { users = std::move(usersIdContainer); }
 
         /**
          * @brief Removes an identifier from the node's user list
          * @param removing_id identifier to remove
-         * @note If there are multiple occurrences of the same identifier in the container,
-         *       only the first one encountered (from the beginning) will be removed
+         * @param remove_all if true, removes all occurrences; if false, removes only the first occurrence
+         * @post If remove_all is true, all occurrences of removing_id are removed
+         * @post If remove_all is false, only the first occurrence is removed
+         * @note When dealing with duplicate user identifiers (e.g., from AND(x, x)),
+         *       remove_all=false will only remove one connection, leaving the other intact
          */
-        void removeIdFromUsers(GateId const removing_id)
+        void removeIdFromUsers(GateId removing_id, bool remove_all = false)
         {
-            auto it = std::ranges::find(users, removing_id);
-            if (it != users.end())
+            if (remove_all)
             {
-                users.erase(it);
+                users.erase(std::remove(users.begin(), users.end(), removing_id), users.end());
+            }
+            else
+            {
+                auto it = std::ranges::find(users, removing_id);
+                if (it != users.end())
+                {
+                    users.erase(it);
+                }
             }
         }
 
         /**
          * @brief Removes an identifier from the node's operand list
          * @param removing_id identifier to remove
-         * @note If there are multiple occurrences of the same identifier in the container,
-         *       only the first one encountered (from the beginning) will be removed
+         * @param remove_all if true, removes all occurrences; if false, removes only the first occurrence
+         * @post If remove_all is true, all occurrences of removing_id are removed
+         * @post If remove_all is false, only the first occurrence is removed
+         * @note For gates with duplicate operands (e.g., AND(x, x)),
+         *       remove_all=false will change the gate's semantics (AND(x, x) becomes AND(x))
          */
-        void removeIdFromOperands(GateId const removing_id)
+        void removeIdFromOperands(GateId removing_id, bool remove_all = false)
         {
-            auto it = std::ranges::find(operands, removing_id);
-            if (it != operands.end())
+            if (remove_all)
             {
-                operands.erase(it);
+                operands.erase(std::remove(operands.begin(), operands.end(), removing_id), operands.end());
+            }
+            else
+            {
+                auto it = std::ranges::find(operands, removing_id);
+                if (it != operands.end())
+                {
+                    operands.erase(it);
+                }
             }
         }
     };
@@ -206,6 +253,17 @@ private:
             {
                 throw std::out_of_range("Gate ID " + std::to_string(id) + " does not exist");
             }
+        }
+    }
+
+    void checkForDuplicates(GateIdContainer const& container, std::string const& context) const
+    {
+        if (container.empty()) return;
+        
+        std::unordered_set<GateId> unique_check(container.begin(), container.end());
+        if (unique_check.size() != container.size())
+        {
+            throw std::logic_error("Duplicate identifiers in " + context);
         }
     }
 
@@ -232,6 +290,9 @@ public:
         , output_gates(outputs)
         , next_gate_id(gates_info.size())
     {
+        checkForDuplicates(inputs, "inputs");
+        checkForDuplicates(outputs, "outputs");
+
         for (GateId id = 0; id < gates_info.size(); ++id)
         {
             GateInfo const& info = gates_info[id];
@@ -264,6 +325,9 @@ public:
         , output_gates(std::move(outputs))
         , next_gate_id(gates_info.size())
     {
+        checkForDuplicates(input_gates, "inputs");
+        checkForDuplicates(output_gates, "outputs");
+
         for (GateId id = 0; id < gates_info.size(); ++id)
         {
             GateInfo& info = gates_info[id];
@@ -306,6 +370,8 @@ public:
      * @param gateId logic node identifier
      * @return GateIdContainer const& - container of operands identifiers
      * @throws std::out_of_range if gateId does not exist
+     * @note The container may contain duplicate identifiers when the same gate
+     *       is used multiple times as an operand (e.g., AND(x, x) returns [x, x])
      */
     [[nodiscard]]
     GateIdContainer const& getGateOperands(GateId gateId) const override
@@ -318,6 +384,9 @@ public:
      * @param gateId logic node identifier
      * @return GateIdContainer const& - container of users identifiers
      * @throws std::out_of_range if gateId does not exist
+     * @note The container may contain duplicate identifiers when this gate
+     *       is used multiple times as an operand by another gate
+     *       (e.g., if y = AND(x, x) exists, then getGateUsers(x) returns [y, y])
      */
     [[nodiscard]]
     GateIdContainer const& getGateUsers(GateId gateId) const override
@@ -360,6 +429,7 @@ public:
     /**
      * @brief Returns the container of input nodes identifiers for the circuit
      * @return GateIdContainer const& - container of input nodes identifiers
+     * @note Input identifiers are guaranteed to be unique within this container
      */
     [[nodiscard]]
     GateIdContainer const& getInputGates() const override
@@ -371,6 +441,7 @@ public:
      * @brief Checks if an element is an output node of the circuit
      * @param gateId logic node identifier
      * @return true if the node is an output, false otherwise
+     * @note Output identifiers are guaranteed to be unique within this container
      */
     [[nodiscard]]
     bool isOutputGate(GateId gateId) const override
@@ -386,13 +457,14 @@ public:
     /**
      * @brief Adds a new logic node to the circuit
      * @param g_type type of the new logic node
-     * @param operands container of operand identifiers for the new node
+     * @param operands container of operands identifiers for the new node
      * @param is_output flag indicating whether the node is an output
      * @throws std::out_of_range if any operand identifier does not exist in the circuit
      * @post A new node with a unique identifier is created
      * @post For each operand in operands, a connection to the new node is established
      * @post If g_type == GateType::INPUT, the node is added to input_gates
      * @post If is_output == true, the node is added to output_gates
+     * @note Multiple identical operands identifiers are allowed
      */
     void addGate(GateType g_type, GateIdContainer const& operands = {}, bool is_output = false)
     {
@@ -420,8 +492,8 @@ public:
     /**
      * @brief Adds a new logic node to the circuit using move semantics for parameters
      * @param g_type type of the new logic node
-     * @param operands container of operand identifiers for the new node
-     * @param users container of user identifiers for the new node
+     * @param operands container of operands identifiers for the new node
+     * @param users container of users identifiers for the new node
      * @param is_output flag indicating whether the node is an output
      * @throws std::out_of_range if any operand or user identifier does not exist in the circuit
      * @post A new node with a unique identifier is created
@@ -429,6 +501,7 @@ public:
      * @post For each user in users, a connection from the new node is established
      * @post If g_type == GateType::INPUT, the node is added to input_gates
      * @post If is_output == true, the node is added to output_gates
+     * @note Multiple identical operands identifiers and users identifiers are allowed
      */
     void addGate(GateType g_type, GateIdContainer&& operands = {}, GateIdContainer&& users = {}, bool is_output = false)
     {
@@ -468,6 +541,7 @@ public:
      * @post new_operand_gate is added to the operands of new_user_gate
      * @post new_user_gate is added to the users of new_operand_gate
      * @throws std::out_of_range if any of the identifiers does not exist
+     * @note Multiple identical operand/user identifiers are allowed
      */
     void connectGates(GateId new_operand_gate, GateId new_user_gate)
     {
@@ -542,10 +616,6 @@ public:
             {
                 input_gates.erase(it);
             }
-        }
-        else
-        {
-            clearGateOperands(removing_gate_id);
         }
     }
 };
