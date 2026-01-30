@@ -13,7 +13,6 @@ namespace cirbo
 class MutableCircuit : public ICircuit
 {
 private:
-
     class MutableNode
     {
     private:
@@ -272,8 +271,11 @@ private:
      */
     void checkForDuplicates(GateIdContainer const& container, std::string const& context) const
     {
-        if (container.empty()) return;
-        
+        if (container.empty())
+        {
+            return;
+        }
+
         std::unordered_set<GateId> unique_check(container.begin(), container.end());
         if (unique_check.size() != container.size())
         {
@@ -296,10 +298,7 @@ public:
     {
     }
 
-    MutableCircuit(
-        GateInfoContainer const& gates_info,
-        GateIdContainer const& inputs,
-        GateIdContainer const& outputs)
+    MutableCircuit(GateInfoContainer const& gates_info, GateIdContainer const& inputs, GateIdContainer const& outputs)
         : input_gates(inputs)
         , output_gates(outputs)
         , next_gate_id(gates_info.size())
@@ -310,26 +309,21 @@ public:
         for (GateId id = 0; id < gates_info.size(); ++id)
         {
             GateInfo const& info = gates_info[id];
-            gates[id] = MutableNode(id, info.getType(), info.getOperands());
+            gates[id]            = MutableNode(id, info.getType(), info.getOperands());
         }
 
         for (auto& [id, node] : gates)
         {
             GateIdContainer node_operands = node.getOperands();
             validateGateIds(node_operands);
-            for (GateId operand_id : node_operands)
-            {
-                gates.at(operand_id).addUser(id);
-            }
+            for (GateId operand_id : node_operands) { gates.at(operand_id).addUser(id); }
         }
 
         validateGateIds(input_gates);
         validateGateIds(output_gates);
     }
 
-    MutableCircuit(GateInfoContainer&& gates_info,
-                GateIdContainer&& inputs,
-                GateIdContainer&& outputs)
+    MutableCircuit(GateInfoContainer&& gates_info, GateIdContainer&& inputs, GateIdContainer&& outputs)
         : input_gates(std::move(inputs))
         , output_gates(std::move(outputs))
         , next_gate_id(gates_info.size())
@@ -340,17 +334,14 @@ public:
         for (GateId id = 0; id < gates_info.size(); ++id)
         {
             GateInfo& info = gates_info[id];
-            gates[id] = MutableNode(id, info.getType(), info.moveOperands());
+            gates[id]      = MutableNode(id, info.getType(), info.moveOperands());
         }
 
         for (auto& [id, node] : gates)
         {
             GateIdContainer node_operands = node.getOperands();
             validateGateIds(node_operands);
-            for (GateId operand_id : node_operands)
-            {
-                gates.at(operand_id).addUser(id);
-            }
+            for (GateId operand_id : node_operands) { gates.at(operand_id).addUser(id); }
         }
 
         validateGateIds(input_gates);
@@ -481,10 +472,7 @@ public:
 
         GateId new_id = next_gate_id++;
         gates[new_id] = MutableNode(new_id, g_type, {});
-        for (GateId operand_id : operands)
-        {
-            connectGates(operand_id, new_id);
-        }
+        for (GateId operand_id : operands) { connectGates(operand_id, new_id); }
         if (g_type == GateType::INPUT)
         {
             input_gates.push_back(new_id);
@@ -516,14 +504,8 @@ public:
 
         GateId new_id = next_gate_id++;
         gates[new_id] = MutableNode(new_id, g_type, {});
-        for (GateId operand_id : operands)
-        {
-            connectGates(operand_id, new_id);
-        }
-        for (GateId user_id : users)
-        {
-            connectGates(new_id, user_id);
-        }
+        for (GateId operand_id : operands) { connectGates(operand_id, new_id); }
+        for (GateId user_id : users) { connectGates(new_id, user_id); }
         if (g_type == GateType::INPUT)
         {
             input_gates.push_back(new_id);
@@ -566,7 +548,7 @@ public:
      * @note If removing_gate_id appears multiple times in input_gates,
      *       only the first occurrence (from the beginning) is removed
      * @note The node is completely removed from the circuit
-     * @throws std::out_of_range if removing_gate_id does not exist or 
+     * @throws std::out_of_range if removing_gate_id does not exist or
      *         does not contains in input_gates
      */
     void removeFromInputs(GateId removing_gate_id)
@@ -575,7 +557,7 @@ public:
         {
             throw std::out_of_range("Gate " + std::to_string(removing_gate_id) + " does not exist");
         }
-        
+
         auto it = std::ranges::find(input_gates, removing_gate_id);
         if (it != input_gates.end())
         {
@@ -623,7 +605,7 @@ public:
         }
 
         MutableNode& node = gates.at(removing_gate_id);
-        
+
         for (GateId operand_id : node.getOperands())
         {
             if (gates.contains(operand_id))
