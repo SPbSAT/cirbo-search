@@ -240,22 +240,36 @@ private:
         }
     };
 
-    std::unordered_map<GateId, std::pair<MutableNode, bool>> gates;
+    std::unordered_map<GateId, MutableNode> gates;
     GateIdContainer input_gates;
     GateIdContainer output_gates;
     GateId next_gate_id;
 
+    /**
+     * @brief Validates that all gates identifiers in the container exist in the circuit
+     * @param ids Container of gate identifiers to validate
+     * @throws std::logic_error if any gate identifier in the container does not exist
+     * @note The check is performed iteratively; the first non-existent ID encountered
+     *       triggers an exception with the specific ID included in the error message
+     */
     void validateGateIds(GateIdContainer const& ids) const
     {
         for (GateId id : ids)
         {
             if (!gates.contains(id))
             {
-                throw std::out_of_range("Gate ID " + std::to_string(id) + " does not exist");
+                throw std::logic_error("Gate ID " + std::to_string(id) + " does not exist");
             }
         }
     }
 
+    /**
+     * @brief Checks for duplicate identifiers in a container
+     * @param container Container of gate identifiers to check for duplicates
+     * @param context Descriptive string indicating the context of the check for meaningful error messages
+     * @throws std::logic_error if the container contains duplicate identifiers
+     * @note An empty container is considered valid and the check is skipped
+     */
     void checkForDuplicates(GateIdContainer const& container, std::string const& context) const
     {
         if (container.empty()) return;
@@ -296,21 +310,16 @@ public:
         for (GateId id = 0; id < gates_info.size(); ++id)
         {
             GateInfo const& info = gates_info[id];
-            gates[id] = std::make_pair(
-                MutableNode(id, info.getType(), info.getOperands()),
-                false
-            );
+            gates[id] = MutableNode(id, info.getType(), info.getOperands());
         }
 
-        for (auto& [id, pair] : gates)
+        for (auto& [id, node] : gates)
         {
-            MutableNode& node = pair.first;
-            for (GateId operand_id : node.getOperands())
+            GateIdContainer node_operands = node.getOperands();
+            validateGateIds(node_operands);
+            for (GateId operand_id : node_operands)
             {
-                if (gates.contains(operand_id))
-                {
-                    gates.at(operand_id).first.addUser(id);
-                }
+                gates.at(operand_id).addUser(id);
             }
         }
 
@@ -331,21 +340,16 @@ public:
         for (GateId id = 0; id < gates_info.size(); ++id)
         {
             GateInfo& info = gates_info[id];
-            gates[id] = std::make_pair(
-                MutableNode(id, info.getType(), info.moveOperands()),
-                false
-            );
+            gates[id] = MutableNode(id, info.getType(), info.moveOperands());
         }
 
-        for (auto& [id, pair] : gates)
+        for (auto& [id, node] : gates)
         {
-            MutableNode& node = pair.first;
-            for (GateId operand_id : node.getOperands())
+            GateIdContainer node_operands = node.getOperands();
+            validateGateIds(node_operands);
+            for (GateId operand_id : node_operands)
             {
-                if (gates.contains(operand_id))
-                {
-                    gates.at(operand_id).first.addUser(id);
-                }
+                gates.at(operand_id).addUser(id);
             }
         }
 
@@ -362,7 +366,7 @@ public:
     [[nodiscard]]
     GateType getGateType(GateId gateId) const override
     {
-        return gates.at(gateId).first.getType();
+        return gates.at(gateId).getType();
     }
 
     /**
@@ -376,7 +380,7 @@ public:
     [[nodiscard]]
     GateIdContainer const& getGateOperands(GateId gateId) const override
     {
-        return gates.at(gateId).first.getOperands();
+        return gates.at(gateId).getOperands();
     }
 
     /**
@@ -391,7 +395,7 @@ public:
     [[nodiscard]]
     GateIdContainer const& getGateUsers(GateId gateId) const override
     {
-        return gates.at(gateId).first.getUsers();
+        return gates.at(gateId).getUsers();
     }
 
     /**
@@ -442,10 +446,15 @@ public:
      * @param gateId logic node identifier
      * @return true if the node is an output, false otherwise
      * @note Output identifiers are guaranteed to be unique within this container
+     * @throws std::out_of_range if gate does not exist
      */
     [[nodiscard]]
     bool isOutputGate(GateId gateId) const override
     {
+        if (!gates.contains(gateId))
+        {
+            throw std::out_of_range("Gate " + std::to_string(gateId) + " does not exist");
+        }
         auto it = std::ranges::find(output_gates, gateId);
         if (it != output_gates.end())
         {
@@ -471,13 +480,10 @@ public:
         validateGateIds(operands);
 
         GateId new_id = next_gate_id++;
-        gates[new_id] = std::make_pair(MutableNode(new_id, g_type, {}), false);
+        gates[new_id] = MutableNode(new_id, g_type, {});
         for (GateId operand_id : operands)
         {
-            if (gates.contains(operand_id))
-            {
-                connectGates(operand_id, new_id);
-            }
+            connectGates(operand_id, new_id);
         }
         if (g_type == GateType::INPUT)
         {
@@ -509,28 +515,24 @@ public:
         validateGateIds(users);
 
         GateId new_id = next_gate_id++;
-        gates[new_id] = std::make_pair(MutableNode(new_id, g_type, {}), false);
+        gates[new_id] = MutableNode(new_id, g_type, {});
         for (GateId operand_id : operands)
         {
-            if (gates.contains(operand_id))
-            {
-                connectGates(operand_id, new_id);
-            }
+            connectGates(operand_id, new_id);
         }
         for (GateId user_id : users)
         {
-            if (gates.contains(user_id))
-            {
-                connectGates(new_id, user_id);
-            }
+            connectGates(new_id, user_id);
         }
         if (g_type == GateType::INPUT)
         {
             input_gates.push_back(new_id);
+            checkForDuplicates(input_gates, "inputs");
         }
         if (is_output)
         {
             output_gates.push_back(new_id);
+            checkForDuplicates(output_gates, "outputs");
         }
     }
 
@@ -545,8 +547,8 @@ public:
      */
     void connectGates(GateId new_operand_gate, GateId new_user_gate)
     {
-        gates.at(new_user_gate).first.addOperand(new_operand_gate);
-        gates.at(new_operand_gate).first.addUser(new_user_gate);
+        gates.at(new_user_gate).addOperand(new_operand_gate);
+        gates.at(new_operand_gate).addUser(new_user_gate);
     }
 
     /**
@@ -555,33 +557,35 @@ public:
      * @param new_type new logic node type
      * @throws std::out_of_range if gate_id does not exist
      */
-    void changeGateType(GateId gate_id, GateType new_type) { gates.at(gate_id).first.setType(new_type); }
+    void changeGateType(GateId gate_id, GateType new_type) { gates.at(gate_id).setType(new_type); }
 
     /**
      * @brief Removes a node from the circuit's input gates list
      * @param removing_gate_id identifier of the node to remove
      * @post Only the first occurrence of removing_gate_id is removed from input_gates
-     * @post The deleted node flag is set to true for the removed node
      * @note If removing_gate_id appears multiple times in input_gates,
      *       only the first occurrence (from the beginning) is removed
-     * @note The node remains in the circuit's gates container but is marked as deleted
+     * @note The node is completely removed from the circuit
+     * @throws std::out_of_range if removing_gate_id does not exist or 
+     *         does not contains in input_gates
      */
     void removeFromInputs(GateId removing_gate_id)
     {
+        if (!gates.contains(removing_gate_id))
+        {
+            throw std::out_of_range("Gate " + std::to_string(removing_gate_id) + " does not exist");
+        }
+        
         auto it = std::ranges::find(input_gates, removing_gate_id);
         if (it != input_gates.end())
         {
             input_gates.erase(it);
-            gates[removing_gate_id].second = true;
+        }
+        else
+        {
+            throw std::out_of_range("Gate " + std::to_string(removing_gate_id) + " does not contains in input_gates");
         }
     }
-
-    /**
-     * @brief Checks if a logic node exists in the circuit
-     * @param gate_id identifier of the node to check
-     * @return true if the element exists, false otherwise
-     */
-    bool isGateExists(GateId gate_id) const { return gates.find(gate_id) != gates.end(); }
 
     /**
      * @brief Checks if a logic node has users
@@ -589,34 +593,51 @@ public:
      * @return true if the element has at least one user, false otherwise
      * @throws std::out_of_range if gate_id does not exist
      */
-    bool isGateHasUsers(GateId gate_id) const { return !gates.at(gate_id).first.getUsers().empty(); }
+    bool isGateHasUsers(GateId gate_id) const { return !gates.at(gate_id).getUsers().empty(); }
 
     /**
      * @brief Removes a logic node from the circuit
      * @param removing_gate_id identifier of the node to remove
      * @throws std::out_of_range if removing_gate_id does not exist
      * @throws std::logic_error if removing_gate_id has users
-     * @post If the element was an input, it is removed from input_gates
-     * @post If the element was not an input, its operands are cleared
-     * @post The element remains in the gates container with a deletion flag
+     * @throws std::logic_error if removing_gate_id is an output node
+     * @post All connections to and from the gate are properly removed
+     * @post The gate is completely removed from the circuit
+     * @post If the gate was an input, it is removed from input_gates
      */
     void removeGate(GateId removing_gate_id)
     {
+        if (!gates.contains(removing_gate_id))
+        {
+            throw std::out_of_range("Gate " + std::to_string(removing_gate_id) + " does not exist");
+        }
+
         if (isGateHasUsers(removing_gate_id))
         {
             throw std::logic_error("Cannot remove gate " + std::to_string(removing_gate_id) + " that has users");
         }
 
-        gates.at(removing_gate_id).second = true;
-
-        if (gates.at(removing_gate_id).first.getType() == GateType::INPUT)
+        if (isOutputGate(removing_gate_id))
         {
-            auto it = std::ranges::find(input_gates, removing_gate_id);
-            if (it != input_gates.end())
+            throw std::logic_error("Cannot remove gate " + std::to_string(removing_gate_id) + " that is an output");
+        }
+
+        MutableNode& node = gates.at(removing_gate_id);
+        
+        for (GateId operand_id : node.getOperands())
+        {
+            if (gates.contains(operand_id))
             {
-                input_gates.erase(it);
+                gates.at(operand_id).removeIdFromUsers(removing_gate_id, true);
             }
         }
+
+        if (node.getType() == GateType::INPUT)
+        {
+            removeFromInputs(removing_gate_id);
+        }
+
+        gates.erase(removing_gate_id);
     }
 };
 }  // namespace cirbo
