@@ -242,7 +242,7 @@ private:
     std::unordered_map<GateId, MutableNode> gates;
     GateIdContainer input_gates;
     GateIdContainer output_gates;
-    GateId next_gate_id;
+    GateId next_gate_id = 0;
 
     /**
      * @brief Validates that all gates identifiers in the container exist in the circuit
