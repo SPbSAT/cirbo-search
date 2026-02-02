@@ -157,7 +157,7 @@ TEST_CASE("MutableCircuit IsOutputGateThrows", "[mutable_circuit]")
 {
     MutableCircuit circuit;
 
-    circuit.addGate(GateType::INPUT, {}); // 0
+    circuit.addGate(GateType::INPUT, {});  // 0
 
     REQUIRE_THROWS_AS(circuit.isOutputGate(42), std::out_of_range);
 }
@@ -193,7 +193,7 @@ TEST_CASE("MutableCircuit AddGateWithUsers", "[mutable_circuit]")
 {
     MutableCircuit circuit;
 
-    circuit.addGate(GateType::INPUT, {});  // 0
+    circuit.addGate(GateType::INPUT, {});       // 0
     circuit.addGate(GateType::CONST_TRUE, {});  // 1
     circuit.addGate(GateType::NOT, GateIdContainer{0}, GateIdContainer{1},
                     false);  // 2
@@ -353,7 +353,7 @@ TEST_CASE("MutableCircuit CopyAssignment", "[mutable_circuit][copy]")
 {
     MutableCircuit circuit;
 
-    circuit.addGate(GateType::INPUT, {});      // 0
+    circuit.addGate(GateType::INPUT, {});         // 0
     circuit.addGate(GateType::OR, {0, 0}, true);  // 1
 
     MutableCircuit copy;
@@ -378,7 +378,7 @@ TEST_CASE("MutableCircuit NextGateIdAfterRemoval", "[mutable_circuit]")
 
     circuit.removeGate(2);
 
-    circuit.addGate(GateType::OR, {0, 1}); // 3
+    circuit.addGate(GateType::OR, {0, 1});  // 3
 
     REQUIRE(circuit.getNumberOfGates() == 3);
     REQUIRE(circuit.getGateOperands(3) == GateIdContainer({0, 1}));
