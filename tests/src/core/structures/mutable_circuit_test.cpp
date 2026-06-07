@@ -18,7 +18,7 @@ TEST_CASE("MutableCircuit SimpleConstruction", "[mutable_circuit]")
         {0, 1},
         {2});
 
-    REQUIRE(circuit.getNumberOfGates() == 3);
+    REQUIRE(circuit.getActualNumberOfGates() == 3);
     REQUIRE(circuit.getInputGates() == GateIdContainer({0, 1}));
     REQUIRE(circuit.getOutputGates() == GateIdContainer({2}));
 
@@ -36,7 +36,7 @@ TEST_CASE("MutableCircuit AddGate", "[mutable_circuit]")
     circuit.addGate(GateType::INPUT, {});         // 1
     circuit.addGate(GateType::OR, {0, 1}, true);  // 2
 
-    REQUIRE(circuit.getNumberOfGates() == 3);
+    REQUIRE(circuit.getActualNumberOfGates() == 3);
     REQUIRE(circuit.getInputGates() == GateIdContainer({0, 1}));
     REQUIRE(circuit.getOutputGates() == GateIdContainer({2}));
 
@@ -85,7 +85,7 @@ TEST_CASE("MutableCircuit RemoveInputGate", "[mutable_circuit]")
 
     circuit.removeGate(1);
 
-    REQUIRE(circuit.getNumberOfGates() == 1);
+    REQUIRE(circuit.getActualNumberOfGates() == 1);
     REQUIRE(circuit.getInputGates() == GateIdContainer({0}));
 }
 
@@ -145,7 +145,7 @@ TEST_CASE("MutableCircuit RemoveGateCorrectly", "[mutable_circuit]")
 
     circuit.removeGate(2);
 
-    REQUIRE(circuit.getNumberOfGates() == 2);
+    REQUIRE(circuit.getActualNumberOfGates() == 2);
 
     REQUIRE(circuit.getGateUsers(0).empty());
     REQUIRE(circuit.getGateUsers(1).empty());
@@ -171,7 +171,7 @@ TEST_CASE("MutableCircuit GetNumberOfGatesWithoutInputs", "[mutable_circuit]")
     circuit.addGate(GateType::AND, {0, 1});  // 2
     circuit.addGate(GateType::OR, {0, 1});   // 3
 
-    REQUIRE(circuit.getNumberOfGates() == 4);
+    REQUIRE(circuit.getActualNumberOfGates() == 4);
     REQUIRE(circuit.getNumberOfGatesWithoutInputs() == 2);
 }
 
@@ -277,18 +277,18 @@ TEST_CASE("MutableCircuit MoveConstructorBasic", "[mutable_circuit][move]")
     circuit.addGate(GateType::INPUT, {});          // 1
     circuit.addGate(GateType::AND, {0, 1}, true);  // 2
 
-    REQUIRE(circuit.getNumberOfGates() == 3);
+    REQUIRE(circuit.getActualNumberOfGates() == 3);
 
     MutableCircuit moved(std::move(circuit));
 
-    REQUIRE(moved.getNumberOfGates() == 3);
+    REQUIRE(moved.getActualNumberOfGates() == 3);
     REQUIRE(moved.getInputGates() == GateIdContainer({0, 1}));
     REQUIRE(moved.getOutputGates() == GateIdContainer({2}));
     REQUIRE(moved.getGateOperands(2) == GateIdContainer({0, 1}));
     REQUIRE(moved.getGateUsers(0) == GateIdContainer({2}));
     REQUIRE(moved.getGateUsers(1) == GateIdContainer({2}));
 
-    REQUIRE(circuit.getNumberOfGates() == 0);
+    REQUIRE(circuit.getActualNumberOfGates() == 0);
     REQUIRE(circuit.getInputGates().empty());
     REQUIRE(circuit.getOutputGates().empty());
 }
@@ -304,7 +304,7 @@ TEST_CASE("MutableCircuit MoveConstructorReuseMovedFrom", "[mutable_circuit][mov
 
     circuit.addGate(GateType::INPUT, {});  // 0
 
-    REQUIRE(circuit.getNumberOfGates() == 1);
+    REQUIRE(circuit.getActualNumberOfGates() == 1);
     REQUIRE(circuit.getInputGates() == GateIdContainer({0}));
 }
 
@@ -321,7 +321,7 @@ TEST_CASE("MutableCircuit MoveAssignment", "[mutable_circuit][move]")
 
     moved = std::move(circuit);
 
-    REQUIRE(moved.getNumberOfGates() == 3);
+    REQUIRE(moved.getActualNumberOfGates() == 3);
     REQUIRE(moved.getInputGates() == GateIdContainer({0, 1}));
     REQUIRE(moved.getOutputGates() == GateIdContainer({2}));
 
@@ -338,7 +338,7 @@ TEST_CASE("MutableCircuit CopyConstructor", "[mutable_circuit][copy]")
 
     MutableCircuit copy(circuit);
 
-    REQUIRE(copy.getNumberOfGates() == 3);
+    REQUIRE(copy.getActualNumberOfGates() == 3);
     REQUIRE(copy.getInputGates() == GateIdContainer({0, 1}));
     REQUIRE(copy.getOutputGates() == GateIdContainer({2}));
 
@@ -346,7 +346,7 @@ TEST_CASE("MutableCircuit CopyConstructor", "[mutable_circuit][copy]")
     REQUIRE(copy.getGateUsers(0) == GateIdContainer({2}));
     REQUIRE(copy.getGateUsers(1) == GateIdContainer({2}));
 
-    REQUIRE(circuit.getNumberOfGates() == 3);
+    REQUIRE(circuit.getActualNumberOfGates() == 3);
 }
 
 TEST_CASE("MutableCircuit CopyAssignment", "[mutable_circuit][copy]")
@@ -361,7 +361,7 @@ TEST_CASE("MutableCircuit CopyAssignment", "[mutable_circuit][copy]")
 
     copy = circuit;
 
-    REQUIRE(copy.getNumberOfGates() == 2);
+    REQUIRE(copy.getActualNumberOfGates() == 2);
     REQUIRE(copy.getInputGates() == GateIdContainer({0}));
     REQUIRE(copy.getOutputGates() == GateIdContainer({1}));
 
@@ -380,7 +380,7 @@ TEST_CASE("MutableCircuit NextGateIdAfterRemoval", "[mutable_circuit]")
 
     circuit.addGate(GateType::OR, {0, 1});  // 3
 
-    REQUIRE(circuit.getNumberOfGates() == 3);
+    REQUIRE(circuit.getActualNumberOfGates() == 3);
     REQUIRE(circuit.getGateOperands(3) == GateIdContainer({0, 1}));
 
     REQUIRE_THROWS_AS(circuit.getGateType(2), std::out_of_range);
@@ -398,7 +398,7 @@ TEST_CASE("MutableCircuit RemoveGateWithDuplicateOperands", "[mutable_circuit]")
     circuit.removeGate(1);
 
     REQUIRE(circuit.getGateUsers(0).empty());
-    REQUIRE(circuit.getNumberOfGates() == 1);
+    REQUIRE(circuit.getActualNumberOfGates() == 1);
 }
 
 TEST_CASE("MutableCircuit GettersThrowOnInvalidId", "[mutable_circuit][exceptions]")
@@ -440,4 +440,29 @@ TEST_CASE("MutableCircuit RemoveGateThrowsOnInvalidId", "[mutable_circuit][excep
     MutableCircuit circuit;
 
     REQUIRE_THROWS_AS(circuit.removeGate(42), std::out_of_range);
+}
+
+TEST_CASE("MutableCircuit GetActualNumberOfGatesWithoutNot", "[mutable_circuit]")
+{
+    MutableCircuit circuit;
+
+    circuit.addGate(GateType::INPUT, {});    // 0
+    circuit.addGate(GateType::INPUT, {});    // 1
+    circuit.addGate(GateType::NOT, {0});     // 2
+    circuit.addGate(GateType::AND, {1, 0});  // 3
+
+    REQUIRE(circuit.getActualNumberOfGates() == 4);
+    REQUIRE(circuit.getActualNumberOfGatesWithoutNot() == 3);
+
+    circuit.changeGateType(2, GateType::CONST_TRUE);
+    REQUIRE(circuit.getActualNumberOfGatesWithoutNot() == 4);
+
+    circuit.changeGateType(2, GateType::NOT);
+    REQUIRE(circuit.getActualNumberOfGatesWithoutNot() == 3);
+
+    circuit.removeGate(2);
+    REQUIRE(circuit.getActualNumberOfGatesWithoutNot() == 3);
+
+    circuit.addGate(GateType::NOT, {0});
+    REQUIRE(circuit.getActualNumberOfGatesWithoutNot() == 3);
 }

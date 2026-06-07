@@ -242,7 +242,8 @@ private:
     std::unordered_map<GateId, MutableNode> gates;
     GateIdContainer input_gates;
     GateIdContainer output_gates;
-    GateId next_gate_id = 0;
+    GateId next_gate_id       = 0;
+    GateId non_not_gate_count = 0;
 
     /**
      * @brief Validates that all gates identifiers in the container exist in the circuit
@@ -283,6 +284,28 @@ private:
         }
     }
 
+protected:
+    /**
+     * @brief Recalculates the number of non-NOT gates in the circuit
+     *
+     * non_not_gate_count contains the number of all gates
+     * whose type is different from GateType::NOT
+     * @note Performs a full traversal of the internal gate container
+     *       and recomputes the counter from scratch
+     */
+    void recalculateNonNotGateCount()
+    {
+        non_not_gate_count = 0;
+
+        for (auto const& [id, node] : gates)
+        {
+            if (node.getType() != GateType::NOT)
+            {
+                ++non_not_gate_count;
+            }
+        }
+    }
+
 public:
     MutableCircuit()                                           = default;
     ~MutableCircuit()                                          = default;
@@ -296,6 +319,7 @@ public:
         , output_gates(std::exchange(m_circuit.output_gates, {}))
         , next_gate_id(std::exchange(m_circuit.next_gate_id, 0))
     {
+        recalculateNonNotGateCount();
     }
 
     MutableCircuit(GateInfoContainer const& gates_info, GateIdContainer const& inputs, GateIdContainer const& outputs)
@@ -321,6 +345,8 @@ public:
 
         validateGateIds(input_gates);
         validateGateIds(output_gates);
+
+        recalculateNonNotGateCount();
     }
 
     MutableCircuit(GateInfoContainer&& gates_info, GateIdContainer&& inputs, GateIdContainer&& outputs)
@@ -346,6 +372,8 @@ public:
 
         validateGateIds(input_gates);
         validateGateIds(output_gates);
+
+        recalculateNonNotGateCount();
     }
 
     /**
@@ -390,15 +418,24 @@ public:
     }
 
     /**
-     * @brief Returns the total number of logic nodes in the circuit
-     * @return GateId - number of logic nodes
-     * @post Result includes input, output, and internal nodes
+     * @brief Returns the last allocated gate identifier in the circuit.
+     * @return GateId - the next gate id value (effectively the last used index + 1).
+     * @note This value represents the upper bound of gate IDs, not the actual number of gates.
      */
     [[nodiscard]]
     GateId getNumberOfGates() const override
     {
-        return gates.size();
+        return next_gate_id;
     }
+
+    /**
+     * @brief Returns the actual number of gates stored in the circuit.
+     * @return GateId - number of existing gates.
+     * @note Equals to the size of the internal gate container.
+     */
+    GateId getActualNumberOfGates() const { return gates.size(); }
+
+    GateId getActualNumberOfGatesWithoutNot() const { return non_not_gate_count; }
 
     /**
      * @brief Returns the number of logic nodes excluding inputs
@@ -455,6 +492,33 @@ public:
     }
 
     /**
+     * @brief Checks whether a gate exists in the circuit.
+     * @param id Identifier of the gate.
+     * @return true if the gate exists, false otherwise.
+     */
+    [[nodiscard]]
+    bool isGateExists(GateId id) const
+    {
+        return gates.contains(id);
+    }
+
+    /**
+     * @brief Checks whether a gate is an input gate.
+     * @param id Identifier of the gate.
+     * @return true if the gate is an input gate.
+     */
+    [[nodiscard]]
+    bool isInputGate(GateId id) const
+    {
+        if (!gates.contains(id))
+        {
+            return false;
+        }
+
+        return gates.at(id).getType() == GateType::INPUT;
+    }
+
+    /**
      * @brief Adds a new logic node to the circuit
      * @param g_type type of the new logic node
      * @param operands container of operands identifiers for the new node
@@ -472,6 +536,12 @@ public:
 
         GateId new_id = next_gate_id++;
         gates[new_id] = MutableNode(new_id, g_type, {});
+
+        if (g_type != GateType::NOT)
+        {
+            ++non_not_gate_count;
+        }
+
         for (GateId operand_id : operands) { connectGates(operand_id, new_id); }
         if (g_type == GateType::INPUT)
         {
@@ -504,6 +574,10 @@ public:
 
         GateId new_id = next_gate_id++;
         gates[new_id] = MutableNode(new_id, g_type, {});
+        if (g_type != GateType::NOT)
+        {
+            ++non_not_gate_count;
+        }
         for (GateId operand_id : operands) { connectGates(operand_id, new_id); }
         for (GateId user_id : users) { connectGates(new_id, user_id); }
         if (g_type == GateType::INPUT)
@@ -534,12 +608,70 @@ public:
     }
 
     /**
+     * @brief Replaces one operand of a logic node with another
+     * @param gate_id identifier of the node whose operand should be replaced
+     * @param old_operand identifier of the operand to be replaced
+     * @param new_operand identifier of the operand that will replace old_operand
+     * @throws std::out_of_range if gate_id, old_operand, or new_operand does not exist
+     *
+     * The first occurrence of old_operand in the operand list of gate_id
+     * is replaced with new_operand
+     *
+     * If old_operand is not found among the operands of gate_id,
+     * the circuit remains unchanged
+     */
+    void replaceOperand(GateId gate_id, GateId old_operand, GateId new_operand)
+    {
+        auto& node    = gates.at(gate_id);
+        auto operands = node.getOperands();
+        for (auto& op : operands)
+        {
+            if (op == old_operand)
+            {
+                op = new_operand;
+                node.setOperands(std::move(operands));
+                gates.at(old_operand).removeIdFromUsers(gate_id, false);
+                gates.at(new_operand).addUser(gate_id);
+                return;
+            }
+        }
+        return;
+    }
+
+    /**
+     * @brief Replaces one output gate with another
+     * @param old_output identifier of the output gate to be replaced
+     * @param new_output identifier of the gate that will become the new output
+     */
+    void replaceOutput(GateId old_output, GateId new_output)
+    {
+        auto it = std::ranges::find(output_gates, old_output);
+        *it     = new_output;
+        checkForDuplicates(output_gates, "outputs");
+    }
+
+    /**
      * @brief Changes the type of an existing logic node
      * @param gate_id identifier of the node to modify
      * @param new_type new logic node type
      * @throws std::out_of_range if gate_id does not exist
      */
-    void changeGateType(GateId gate_id, GateType new_type) { gates.at(gate_id).setType(new_type); }
+    void changeGateType(GateId gate_id, GateType new_type)
+    {
+        auto& node        = gates.at(gate_id);
+        GateType old_type = node.getType();
+
+        if (old_type != GateType::NOT && new_type == GateType::NOT)
+        {
+            --non_not_gate_count;
+        }
+        else if (old_type == GateType::NOT && new_type != GateType::NOT)
+        {
+            ++non_not_gate_count;
+        }
+
+        gates.at(gate_id).setType(new_type);
+    }
 
     /**
      * @brief Removes a node from the circuit's input gates list
@@ -617,6 +749,11 @@ public:
         if (node.getType() == GateType::INPUT)
         {
             removeFromInputs(removing_gate_id);
+        }
+
+        if (node.getType() != GateType::NOT)
+        {
+            --non_not_gate_count;
         }
 
         gates.erase(removing_gate_id);
